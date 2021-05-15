@@ -1,0 +1,402 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "Netatmo - Aircare",
+        "description": "This is a sample test for describing NETATMO's APIs with the OAS3 standard definition using swagger.",
+        "termsOfService": "https://dev.netatmo.com/resources/legal",
+        "contact": {
+            "name": "Contact API Netatmo",
+            "url": "https://dev.netatmo.com/resources/legal",
+            "email": "contact-api@netatmo.com"
+        },
+        "license": {
+            "name": "Netatmo Legal",
+            "url": "https://dev.netatmo.com/resources/legal"
+        },
+        "version": "1.1.2"
+    },
+    "externalDocs": {
+        "description": "Find out more about Netatmo API",
+        "url": "https://dev.netatmo.com/resources/technical/introduction"
+    },
+    "servers": [
+        {
+            "url": "https://api.netatmo.com/api",
+            "description": "Netatmo's API endpoint"
+        }
+    ],
+    "tags": [
+        {
+            "name": "Aircare",
+            "description": "All Aircare APIs"
+        },
+        {
+            "name": "User",
+            "description": "Info - User"
+        },
+        {
+            "name": "Healthy Home Coach",
+            "description": "Info - HHC data",
+            "externalDocs": {
+                "description": "Homesdata",
+                "url": "https://dev.netatmo.com/resources/technical/reference/aircare"
+            }
+        }
+    ],
+    "paths": {
+        "/gethomecoachsdata": {
+            "get": {
+                "tags": [
+                    "Aircare",
+                    "Healthy Home Coach"
+                ],
+                "summary": "Returns data from a user's Healthy Home Coach (measures and device specific data)",
+                "description": "scope/read_homecoach",
+                "operationId": "gethomecoachdata",
+                "parameters": [
+                    {
+                        "name": "device_id",
+                        "in": "query",
+                        "description": "Weather station mac address",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": "70:ee:50:00:00:xx"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/StationData_NHC"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/ServerResponse"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvalidServerResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "OAuth": [
+                            "read_homecoach"
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Place_NHC": {
+                "type": "object",
+                "properties": {
+                    "altitude": {
+                        "type": "number",
+                        "example": 45,
+                        "description": "altitude"
+                    },
+                    "city": {
+                        "type": "string",
+                        "example": "Boulogne-billancourt"
+                    },
+                    "country": {
+                        "type": "string",
+                        "example": null,
+                        "description": "country code"
+                    },
+                    "timezone": {
+                        "type": "string",
+                        "example": "Europe/Paris",
+                        "description": "timezone"
+                    },
+                    "location": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "example": "30.89600807058707, 29.94281464724796",
+                            "description": "Latitude and longitude"
+                        }
+                    }
+                }
+            },
+            "User_NHC": {
+                "type": "object",
+                "properties": {
+                    "mail": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "name@mail.com"
+                    },
+                    "administrative": {
+                        "type": "object",
+                        "properties": {
+                            "lang": {
+                                "type": "string",
+                                "example": "fr-FR",
+                                "description": "user locale"
+                            },
+                            "reg_locale": {
+                                "type": "string",
+                                "example": "fr-FR",
+                                "description": "user regional preferences (used for displaying date)"
+                            },
+                            "country": {
+                                "type": "string",
+                                "example": "FR"
+                            },
+                            "unit": {
+                                "type": "string",
+                                "example": "GB",
+                                "description": "0 -> metric system, 1 -> imperial system"
+                            },
+                            "windunit": {
+                                "type": "number",
+                                "example": 1,
+                                "description": "0 -> kph, 1 -> mph, 2 -> ms, 3 -> beaufort, 4 -> knot"
+                            },
+                            "pressureunit": {
+                                "type": "number",
+                                "example": 0,
+                                "description": "0 -> mbar, 1 -> inHg, 2 -> mmHg"
+                            },
+                            "feel_like_algo": {
+                                "type": "number",
+                                "example": 0,
+                                "description": "algorithm used to compute feel like temperature, 0 -> humidex, 1 -> heat-index"
+                            }
+                        }
+                    }
+                }
+            },
+            "StationData_NHC": {
+                "type": "object",
+                "properties": {
+                    "body": {
+                        "type": "object",
+                        "properties": {
+                            "devices": {
+                                "type": "array",
+                                "items": {
+                                    "properties": {
+                                        "_id": {
+                                            "type": "string",
+                                            "example": "70:ee:50:22:a3:00",
+                                            "description": "id of the station"
+                                        },
+                                        "date_setup": {
+                                            "type": "string",
+                                            "example": 1513707043,
+                                            "description": "timestamp of the last installation"
+                                        },
+                                        "last_setup": {
+                                            "type": "string",
+                                            "example": 1513707043
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "example": "NHC"
+                                        },
+                                        "last_status_store": {
+                                            "type": "number",
+                                            "example": 1555677748,
+                                            "description": "timestamp of the last status update"
+                                        },
+                                        "module_name": {
+                                            "type": "string",
+                                            "example": null,
+                                            "description": "name of the module"
+                                        },
+                                        "firmware": {
+                                            "type": "number",
+                                            "example": 45,
+                                            "description": "version of the software"
+                                        },
+                                        "last_upgrade": {
+                                            "type": "number",
+                                            "example": null,
+                                            "description": "timestamp of the last upgrade"
+                                        },
+                                        "wifi_status": {
+                                            "type": "number",
+                                            "example": 22,
+                                            "description": "wifi status per station. (86=bad, 56=good)"
+                                        },
+                                        "reachable": {
+                                            "type": "boolean",
+                                            "description": "true if the station connected to Netatmo cloud within the last 4 hours"
+                                        },
+                                        "co2_calibrating": {
+                                            "type": "boolean",
+                                            "example": false,
+                                            "description": "true if the station is calibrating"
+                                        },
+                                        "station_name": {
+                                            "type": "string",
+                                            "example": "Bedroom",
+                                            "description": "name of the station"
+                                        },
+                                        "data_type": {
+                                            "type": "array",
+                                            "description": "array of data measured by the device (e.g. \"Temperature\",\"Humidity\")",
+                                            "items": {
+                                                "type": "string",
+                                                "example": "Temperature, CO2, Humidity, Noise, Pressure, health_idx"
+                                            }
+                                        },
+                                        "place": {
+                                            "$ref": "#/components/schemas/Place_NHC"
+                                        },
+                                        "dashboard_data": {
+                                            "$ref": "#/components/schemas/Dashboard_data_NHC"
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "Bedroom Baby"
+                                        },
+                                        "read_only": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    }
+                                }
+                            },
+                            "user": {
+                                "$ref": "#/components/schemas/User_NHC"
+                            }
+                        }
+                    }
+                }
+            },
+            "Dashboard_data_NHC": {
+                "type": "object",
+                "properties": {
+                    "time_utc": {
+                        "type": "number",
+                        "example": 1555677739,
+                        "description": "time of measurements"
+                    },
+                    "Temperature": {
+                        "type": "number",
+                        "example": 23.7,
+                        "description": "temperature (in °C)"
+                    },
+                    "CO2": {
+                        "type": "number",
+                        "example": 967,
+                        "description": "CO2 level (in ppm)"
+                    },
+                    "Humidity": {
+                        "type": "number",
+                        "example": 41,
+                        "description": "humidity (in %)"
+                    },
+                    "Noise": {
+                        "type": "number",
+                        "example": 42
+                    },
+                    "Pressure": {
+                        "type": "number",
+                        "example": 45,
+                        "description": "surface pressure in mbar"
+                    },
+                    "AbsolutePressure": {
+                        "type": "number",
+                        "example": 1022.9,
+                        "description": "sea-level pressure in mbar"
+                    },
+                    "health_idx": {
+                        "type": "number",
+                        "example": 1,
+                        "description": "health index"
+                    },
+                    "min_temp": {
+                        "type": "number",
+                        "example": 21.2
+                    },
+                    "max_temp": {
+                        "type": "number",
+                        "example": 27.4
+                    },
+                    "date_max_temp": {
+                        "type": "number",
+                        "example": 1555662436
+                    },
+                    "date_min_temp": {
+                        "type": "number",
+                        "example": 1555631374
+                    }
+                }
+            },
+            "ServerResponse": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "example": "ok"
+                    },
+                    "time_exec": {
+                        "type": "string",
+                        "example": "0.060059070587158"
+                    },
+                    "time_server": {
+                        "type": "string",
+                        "example": "1553777827"
+                    }
+                }
+            },
+            "InvalidServerResponse": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "type": "object",
+                        "properties": {
+                            "code": {
+                                "type": "number",
+                                "example": 0
+                            },
+                            "message": {
+                                "type": "string",
+                                "example": "explicit error"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "OAuth": {
+                "type": "oauth2",
+                "flows": {
+                    "authorizationCode": {
+                        "authorizationUrl": "https://api.netatmo.com/oauth2/authorize",
+                        "tokenUrl": "https://api.netatmo.com/oauth2/token",
+                        "scopes": {
+                            "read_homecoach": "retrieve healthy homecoach data"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

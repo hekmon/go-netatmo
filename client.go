@@ -28,7 +28,7 @@ type OAuth2BaseConfig struct {
 	ClientID     string
 	ClientSecret string
 	Scopes       Scopes
-	RedirectURL  string // optional, if set it must match the one defined in the application profil on netatmo dev platform
+	RedirectURL  string // must match the one set on your application profil on the dev portal
 }
 
 // GetUserAuthorizationURL retreive the real auth URL you must redirect your user to in order for him to allow your app and trigger
@@ -46,7 +46,8 @@ func GetUserAuthorizationURL(ctx context.Context, conf OAuth2BaseConfig, uniqID 
 		return http.ErrUseLastResponse
 	}
 	// Generate POST request expecting final URL to be on the 302 Location header response
-	generateURL := GenerateOAuth2Config(conf).AuthCodeURL(uniqID)
+	generateURL := GenerateOAuth2Config(conf).AuthCodeURL(uniqID,
+		oauth2.SetAuthURLParam("redirect_uri", conf.RedirectURL))
 	req, err := http.NewRequestWithContext(ctx, "POST", generateURL, nil)
 	if err != nil {
 		err = fmt.Errorf("failed to forge a HTTP request using '%s' as base URL: %w", generateURL, err)

@@ -32,25 +32,14 @@ func NewClientWithAuthorizationCode(ctx context.Context, conf OAuth2BaseConfig, 
 	// Prepare the oauth2 enabled client
 	c := prepareController(ctx, conf, customClient)
 	// Exchange auth code for access & refresh token
-	if c.conf.RedirectURL != "" {
-		c.token, err = c.conf.Exchange(c.ctx, authCode,
-			oauth2.SetAuthURLParam("scope", conf.Scopes.AuthURLValue()),
-			oauth2.SetAuthURLParam("redirect_uri", c.conf.RedirectURL),
-		)
-		if err != nil {
-			client = nil
-			err = fmt.Errorf("can not get oauth2 tokens with authorization code: %w", err)
-			return
-		}
-	} else {
-		c.token, err = c.conf.Exchange(c.ctx, authCode,
-			oauth2.SetAuthURLParam("scope", conf.Scopes.AuthURLValue()),
-		)
-		if err != nil {
-			client = nil
-			err = fmt.Errorf("can not get oauth2 tokens with authorization code: %w", err)
-			return
-		}
+	c.token, err = c.conf.Exchange(c.ctx, authCode,
+		oauth2.SetAuthURLParam("scope", conf.Scopes.AuthURLValue()),
+		oauth2.SetAuthURLParam("redirect_uri", c.conf.RedirectURL),
+	)
+	if err != nil {
+		client = nil
+		err = fmt.Errorf("can not get oauth2 tokens with authorization code: %w", err)
+		return
 	}
 	// Generate the oauth2 enabled http client
 	c.http = c.conf.Client(c.ctx, c.token)

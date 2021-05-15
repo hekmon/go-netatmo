@@ -103,3 +103,5 @@ func prepareController(ctx context.Context, conf OAuth2BaseConfig, customClient 
 func (c *Controller) GetTokens() (tokens oauth2.Token) {
 	return *c.token
 }
+
+func (c *Controller) ExecuteNetatmoAPIReaquest() {}

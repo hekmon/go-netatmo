@@ -115,4 +115,4 @@ func (c *Controller) GetTokens() (tokens oauth2.Token) {
 }
 
 // ExecuteNetatmoAPIReaquest: TODO
-func (c *Controller) ExecuteNetatmoAPIReaquest() {}
+func (c *Controller) ExecuteNetatmoAPIRequest() {}

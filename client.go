@@ -18,7 +18,7 @@ const (
 // Client represents the Netatmo API client needed by the subpackages to query the API.
 // This package provides a reference implementation. See the Controller struct.
 type Client interface {
-	ExecuteNetatmoAPIReaquest()
+	ExecuteNetatmoAPIRequest()
 	GetTokens() oauth2.Token
 }
 

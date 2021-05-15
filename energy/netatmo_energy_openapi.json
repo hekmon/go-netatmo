@@ -1,0 +1,1695 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "Netatmo - Energy",
+        "description": "NETATMO's APIs for Energy OAS3",
+        "termsOfService": "https://dev.netatmo.com/legal/",
+        "contact": {
+            "name": "Contact API Netatmo",
+            "url": "https://dev.netatmo.com/legal/",
+            "email": "contact-api@netatmo.com"
+        },
+        "license": {
+            "name": "Netatmo Legal",
+            "url": "https://dev.netatmo.com/legal/"
+        },
+        "version": "1.1.2"
+    },
+    "externalDocs": {
+        "description": "Find out more about Netatmo API",
+        "url": "https://dev.netatmo.com"
+    },
+    "servers": [
+        {
+            "url": "https://api.netatmo.com/api",
+            "description": "Netatmo's API endpoint"
+        }
+    ],
+    "paths": {
+        "/homesdata": {
+            "get": {
+                "tags": [
+                    "Energy"
+                ],
+                "summary": "Retrieve user's homes and topology",
+                "description": "This endpoint permits to retrieve the actual topology and static information of all devices present into a user account. It is also possible to specify a home_id to focus on one home.<br><br><b> Scope to use:</b> <br> read_thermostat",
+                "operationId": "Shomesdata",
+                "parameters": [
+                    {
+                        "name": "home_id",
+                        "in": "query",
+                        "description": "Filter by the ID of the home you want",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": "5954e7f249c75f97428b7b23"
+                        }
+                    },
+                    {
+                        "name": "gateway_types",
+                        "in": "query",
+                        "description": "Filter by Gateway Type",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": "For Thermostat/Valves & Relay = NAPLUG/ Only Thermostat= NATherm1 /Valves = NRV",
+                            "enum": [
+                                "NAPlug",
+                                "NATherm1",
+                                "NRV"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/EbodyHomesdata"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/ServerResponse"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvalidServerResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "BasicAuth": []
+                    },
+                    {
+                        "OAuth2": [
+                            "read_thermostat"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/homestatus": {
+            "get": {
+                "tags": [
+                    "Energy"
+                ],
+                "summary": "Get the current status of a home and the associated devices",
+                "description": "This endpoint permits to retrieve the actual status of all devices present into a specific home.<br><br><b> Scope to use:</b> <br> read_thermostat",
+                "operationId": "homestatus",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "home_id",
+                        "description": "The targeted home",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "example": "5954e7f249c75f97428b7b23"
+                            }
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "device_types",
+                        "description": "Array of devices type",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "style": "form",
+                        "explode": false,
+                        "examples": {
+                            "oneType": {
+                                "summary": "Example of type",
+                                "value": "NAPlug"
+                            },
+                            "multipleTypes": {
+                                "summary": "Example of multiple IDs",
+                                "value": "NAPlug, NATherm1 ,NRV"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ServerResponse"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/bodyHomestatus"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvalidServerResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "BasicAuth": []
+                    },
+                    {
+                        "OAuth2": [
+                            "read_thermostat"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/getroommeasure": {
+            "get": {
+                "tags": [
+                    "Energy"
+                ],
+                "summary": "Retrieve data history of a room (eg to display graphs)",
+                "description": "This endpoint permits to retrieve the history of data associated to a room.<br><br><b> Scope to use:</b> <br> read_thermostat",
+                "operationId": "getroommeasure",
+                "parameters": [
+                    {
+                        "name": "home_id",
+                        "in": "query",
+                        "description": "Id of home",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": "5954e7f249c75f97428b7b23"
+                        }
+                    },
+                    {
+                        "name": "room_id",
+                        "in": "query",
+                        "description": "Id of room",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": 2016185224
+                        }
+                    },
+                    {
+                        "name": "scale",
+                        "in": "query",
+                        "description": "Timelapse between two measurements",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": "30min",
+                            "enum": [
+                                "30min",
+                                "1hour",
+                                "3hours",
+                                "1day",
+                                "1week",
+                                "1month"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Type of data to be returned. Setpoint temperature is only available for scales from 30 to 3hours and min/max temp and dates for scales from 1day to 1month.",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "items": {
+                                "enum": [
+                                    "temperature",
+                                    "sp_temperature",
+                                    "min_temp",
+                                    "max_temp",
+                                    "date_min_temp",
+                                    "date_max_temp"
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "name": "date_begin",
+                        "in": "query",
+                        "description": "Timestamp of the first measure to retrieve. Default is null",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "number",
+                            "example": 1459265427
+                        }
+                    },
+                    {
+                        "name": "date_end",
+                        "in": "query",
+                        "description": "Timestamp of the last measure to retrieve (default and max are 1024). Default is null",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "number",
+                            "example": 1459265427
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Maximum number of measurements (default and max Are 1024)",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "number",
+                            "example": 1024
+                        }
+                    },
+                    {
+                        "name": "optimize",
+                        "in": "query",
+                        "description": "Determines the format of the answer. Default is true. For mobile apps we recommend True and False if bandwidth isn't an issue as it is easier to parse",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "boolean",
+                            "example": true
+                        }
+                    },
+                    {
+                        "name": "real_time",
+                        "in": "query",
+                        "description": "If scale different than max, timestamps are by default offset + scale/2. To get exact timestamps, use true. Default is false",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "boolean",
+                            "example": false
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/bodyRoommeasure"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/ServerResponse"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvalidServerResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "BasicAuth": []
+                    },
+                    {
+                        "OAuth2": [
+                            "read_thermostat"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/setroomthermpoint": {
+            "post": {
+                "tags": [
+                    "Energy"
+                ],
+                "summary": "Control the heating of a room",
+                "description": "This endpoint permits to control the heating of a specific room. A room can be set in 4 differents modes:<ul><li> \"manual\" mode in which setpoints can be applied for a specific duration (use endtime)</li><li> \"max\" mode which will put the setpoint at max (30°) for a given duration (default is xx and can be changed by the user in its settings)</li><li>\"home\" mode which basically makes the room following the Home mode.</li></ul> <br><b> Scope to use:</b> <br> write_thermostat",
+                "operationId": "setroomthermpoint",
+                "parameters": [
+                    {
+                        "name": "home_id",
+                        "in": "query",
+                        "description": "Id of home",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": "5954e7f249c75f97428b7b23"
+                        }
+                    },
+                    {
+                        "name": "room_id",
+                        "in": "query",
+                        "description": "Id of room",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": 2016185224
+                        }
+                    },
+                    {
+                        "name": "mode",
+                        "in": "query",
+                        "description": "The mode you are applying to this room",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": null,
+                            "enum": [
+                                "manual",
+                                "max",
+                                "hg",
+                                "home"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "temp",
+                        "in": "query",
+                        "description": "Manual temperature to apply",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "number",
+                            "example": 21
+                        }
+                    },
+                    {
+                        "name": "endtime",
+                        "in": "query",
+                        "description": "end time of the schedule mode set.",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": 1554715909
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ServerResponse"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvalidServerResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "BasicAuth": []
+                    },
+                    {
+                        "OAuth2": [
+                            "write_thermostat"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/setthermmode": {
+            "post": {
+                "tags": [
+                    "Energy"
+                ],
+                "summary": "Control the home heating system",
+                "description": "This endpoint permits to control the heating of a specific home. A home can be set in 3 differents modes:<ul><li> \"schedule\" mode in which the home will follow the user schedule</li><li> \"away\" mode which will put the whole house to away (default is 12° but can be changed by the user in its settings)</li><li>\"hg\" corresponds to frostguard mode (7° by default)</li></ul> <br><b> Scope to use:</b> <br> write_thermostat",
+                "operationId": "setthermmode",
+                "parameters": [
+                    {
+                        "name": "home_id",
+                        "in": "query",
+                        "description": "Filter by the ID of the home you want",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": "5954e7f249c75f97428b7b23"
+                        }
+                    },
+                    {
+                        "name": "mode",
+                        "in": "query",
+                        "description": "Set the home heating system to use schedule/ away/ frost guard mode (schedule = Schedule of the house; away= away from the house; hg= frostguard for long departure)",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": null,
+                            "enum": [
+                                "schedule",
+                                "away",
+                                "hg"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "endtime",
+                        "in": "query",
+                        "description": "activation duration of the therm mode. It's settable only for \"hg\" and \"away\" mode",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": 1554715909
+                        }
+                    },
+                    {
+                        "name": "schedule_id",
+                        "in": "query",
+                        "description": "switch the schedule. This parameter would be used only in \"schedule\" mode",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": 1554715909
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ServerResponse"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvalidServerResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "BasicAuth": []
+                    },
+                    {
+                        "OAuth2": [
+                            "write_thermostat"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/getmeasure": {
+            "get": {
+                "tags": [
+                    "Energy"
+                ],
+                "summary": "Retrieve boiler historical data",
+                "description": "This endpoint permits to retrieve the history of the boiler data.<br><br><b> Scope to use:</b> <br> read_thermostat",
+                "operationId": "getmeasure",
+                "parameters": [
+                    {
+                        "name": "device_id",
+                        "in": "query",
+                        "description": "Mac adress of the device",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": "70:ee:50:00:00:xx"
+                        }
+                    },
+                    {
+                        "name": "scale",
+                        "in": "query",
+                        "description": "Timelapse between two measurements",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "example": "30min",
+                                "enum": [
+                                    "30min",
+                                    "1hour",
+                                    "3hours",
+                                    "1day",
+                                    "1week",
+                                    "1month"
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Type of data to be returned. Boileron/off is only available for scales from 30 to 3hours and sums of boiler on/off for scales from 1day to 1month",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "boileron",
+                                    "boileroff",
+                                    "sum_boiler_on",
+                                    "sum_boiler_off"
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "name": "date_begin",
+                        "in": "query",
+                        "description": "Timestamp of the first measure to retrieve. Default is null.",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "number",
+                            "example": 1459265427
+                        }
+                    },
+                    {
+                        "name": "date_end",
+                        "in": "query",
+                        "description": "Timestamp of the last measure to retrieve (default and max are 1024). Default is null.",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "number",
+                            "example": 2459265427
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Maximum number of measurements (default and max are 1024)",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "number",
+                            "example": 1024
+                        }
+                    },
+                    {
+                        "name": "optimize",
+                        "in": "query",
+                        "description": "Determines the format of the answer. Default is true. For mobile apps we recommend True and False if bandwidth isn't an issue as it is easier to parse.",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "boolean",
+                            "example": false
+                        }
+                    },
+                    {
+                        "name": "real_time",
+                        "in": "query",
+                        "description": "If scale different than max, timestamps are by default offset + scale/2. To get exact timestamps, use true. Default is false.",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "boolean",
+                            "example": false
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/body_Measure_Get"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/ServerResponse"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvalidServerResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "BasicAuth": []
+                    },
+                    {
+                        "OAuth2": [
+                            "read_thermostat"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/synchomeschedule": {
+            "post": {
+                "tags": [
+                    "Energy"
+                ],
+                "summary": "Modify a thermostat weekly schedule.",
+                "description": "This endpoint permits to edit a thermostat schedule of a home. To edit a particular schedule, you need to enter the schedule_id, if you don't specify one, the modification will be applied to the current schedule<br><br><b> Scope to use:</b> <br> write_thermostat",
+                "operationId": "synchomeschedule",
+                "parameters": [
+                    {
+                        "name": "home_id",
+                        "in": "query",
+                        "description": "Id of the home",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": "59xxxxxxxxxxxxxxxxx"
+                        }
+                    },
+                    {
+                        "name": "schedule_id",
+                        "in": "query",
+                        "description": "Id of the schedule",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": "5axxxxxxxxxxxxxxxxx"
+                        }
+                    },
+                    {
+                        "name": "zones",
+                        "in": "query",
+                        "description": "Array of data used to define time periods to build a schedule. More info on the Thermostat page. id of zone | type of zone | Name of zone | Temperature",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/components/schemas/Zones"
+                            }
+                        }
+                    },
+                    {
+                        "name": "timetable",
+                        "in": "query",
+                        "description": "Array describing the timetable. More info on the Thermostat page. ID of the zone - offset in minutes since Monday 00:00:01",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/Timetable"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "hg_temp",
+                        "in": "query",
+                        "description": "Frost guard temperature value",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "number",
+                            "example": 8
+                        }
+                    },
+                    {
+                        "name": "away_temp",
+                        "in": "query",
+                        "description": "Away temperature value",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "number",
+                            "example": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ServerResponse"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvalidServerResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "BasicAuth": []
+                    },
+                    {
+                        "OAuth2": [
+                            "write_thermostat"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/switchhomeschedule": {
+            "post": {
+                "tags": [
+                    "Energy"
+                ],
+                "summary": "Apply a specific schedule",
+                "description": "This endpoint permits apply a specific schedule to a home<br><br><b> Scope to use:</b> <br> write_thermostat",
+                "operationId": "switchhomeschedule",
+                "parameters": [
+                    {
+                        "name": "schedule_id",
+                        "in": "query",
+                        "description": "Id of the schedule to switch on",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": "5954e7f249c75f97428b7b23"
+                        }
+                    },
+                    {
+                        "name": "home_id",
+                        "in": "query",
+                        "description": "Id of the home",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": "5954e7f249c75f97428b7b24"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ServerResponse"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvalidServerResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "BasicAuth": []
+                    },
+                    {
+                        "OAuth2": [
+                            "write_thermostat"
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "body_Measure_Get": {
+                "type": "object",
+                "properties": {
+                    "body": {
+                        "items": {
+                            "$ref": "#/components/schemas/Measure_Get"
+                        }
+                    }
+                }
+            },
+            "Measure_Get": {
+                "type": "object",
+                "properties": {
+                    "beg_time": {
+                        "type": "number",
+                        "example": 1513295900
+                    },
+                    "step_time": {
+                        "type": "number",
+                        "example": 1800
+                    },
+                    "value": {
+                        "type": "array",
+                        "items": {
+                            "type": "number",
+                            "example": 50
+                        }
+                    }
+                }
+            },
+            "bodyRoommeasure": {
+                "properties": {
+                    "body": {
+                        "items": {
+                            "$ref": "#/components/schemas/Roommeasure"
+                        }
+                    }
+                }
+            },
+            "Roommeasure": {
+                "type": "object",
+                "properties": {
+                    "beg_time": {
+                        "type": "number",
+                        "format": "int64",
+                        "example": 1513259100
+                    },
+                    "step_time": {
+                        "type": "number",
+                        "format": "int64",
+                        "example": 1800
+                    },
+                    "values": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/RoomTempValues"
+                        }
+                    }
+                }
+            },
+            "RoomTempValues": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "number",
+                        "example": 17
+                    }
+                }
+            },
+            "bodyHomestatus": {
+                "type": "object",
+                "properties": {
+                    "body": {
+                        "$ref": "#/components/schemas/homestatus"
+                    }
+                }
+            },
+            "homestatus": {
+                "type": "object",
+                "properties": {
+                    "home": {
+                        "$ref": "#/components/schemas/HomeS"
+                    }
+                }
+            },
+            "HomeS": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "maxLength": 24,
+                        "type": "string",
+                        "example": "5954e7f249c75f97428b7b23"
+                    },
+                    "modules": {
+                        "type": "array",
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "$ref": "#/components/schemas/NAPlug_S"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/NRV_S"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/NATherm1_S"
+                                }
+                            ]
+                        }
+                    },
+                    "rooms": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/RoomS"
+                        }
+                    }
+                }
+            },
+            "RoomS": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 3466299980,
+                        "description": "id of the room"
+                    },
+                    "reachable": {
+                        "type": "boolean",
+                        "example": true,
+                        "description": "false if none of the module of the room are reachable"
+                    },
+                    "therm_measured_temperature": {
+                        "type": "number",
+                        "example": 23,
+                        "description": "measured temperature"
+                    },
+                    "therm_setpoint_temperature": {
+                        "type": "number",
+                        "example": 20,
+                        "description": "setpoint temperature"
+                    },
+                    "therm_setpoint_mode": {
+                        "type": "string",
+                        "example": "schedule, manual",
+                        "description": "mode (can be manual, max, off, schedule, away or hg)"
+                    },
+                    "therm_setpoint_start_time": {
+                        "type": "number",
+                        "example": "0, 1550000000",
+                        "description": "start time for a manual setpoint"
+                    },
+                    "therm_setpoint_end_time": {
+                        "type": "number",
+                        "example": "0, 1550003600",
+                        "description": "end time for a manual setpoint"
+                    },
+                    "anticipating": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "open_windows": {
+                        "type": "boolean",
+                        "example": false
+                    }
+                }
+            },
+            "NAPlug_S": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "70:ee:50:0c:04:fc",
+                        "description": "id of the module"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "NAPlug",
+                        "description": "type of the module"
+                    },
+                    "firmware_revision": {
+                        "type": "number",
+                        "example": 45,
+                        "description": "firmware version"
+                    },
+                    "rf_strenght": {
+                        "type": "number",
+                        "example": 13,
+                        "description": "90 = low, 80 = medium, 70 = high, 60 = full signal"
+                    },
+                    "wifi_strenght": {
+                        "type": "number",
+                        "example": 67,
+                        "description": "56 good, 86 poor"
+                    }
+                }
+            },
+            "NATherm1_S": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "70:ee:50:0c:04:fc",
+                        "description": "id of the module"
+                    },
+                    "reachable": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "NATherm1",
+                        "description": "type of the module"
+                    },
+                    "firmware_revision": {
+                        "type": "number",
+                        "example": 45,
+                        "description": "firmware version"
+                    },
+                    "rf_strenght": {
+                        "type": "number",
+                        "example": 61,
+                        "description": "90 = low, 80 = medium, 70 = high, 60 = full signal"
+                    },
+                    "battery_level": {
+                        "type": "number",
+                        "example": 3200,
+                        "description": "see the battery description"
+                    },
+                    "boiler_valve_comfort_boost": {
+                        "type": "boolean",
+                        "example": false,
+                        "description": "only for NATherm1 Indicate whether or not a valve is currently asking for a boiler Boost"
+                    },
+                    "boiler_status": {
+                        "type": "boolean",
+                        "example": true,
+                        "description": "only for NATherm1"
+                    },
+                    "anticipating": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "bridge": {
+                        "type": "number",
+                        "example": "01:00:00:00:0e:e0"
+                    },
+                    "battery_state": {
+                        "type": "string",
+                        "enum": [
+                            "very_low",
+                            "low",
+                            "medium",
+                            "high",
+                            "full"
+                        ]
+                    }
+                }
+            },
+            "NRV_S": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "70:ee:50:0c:04:fc",
+                        "description": "id of the module"
+                    },
+                    "reachable": {
+                        "type": "boolean",
+                        "example": true,
+                        "description": "true if the module can communicate with the relay"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "NRV",
+                        "description": "type of the module"
+                    },
+                    "firmware_revision": {
+                        "type": "number",
+                        "example": 45,
+                        "description": "version of the firmware"
+                    },
+                    "rf_strenght": {
+                        "type": "number",
+                        "example": 13,
+                        "description": "90 = low, 80 = medium, 70 = high, 60 = full signal"
+                    },
+                    "battery_level": {
+                        "type": "number",
+                        "example": 2700,
+                        "description": "see the battery description"
+                    },
+                    "bridge": {
+                        "type": "number",
+                        "example": "01:00:00:00:0e:e0"
+                    },
+                    "battery_state": {
+                        "type": "string",
+                        "enum": [
+                            "very_low",
+                            "low",
+                            "medium",
+                            "high"
+                        ]
+                    }
+                }
+            },
+            "EbodyHomesdata": {
+                "type": "object",
+                "properties": {
+                    "body": {
+                        "type": "object",
+                        "properties": {
+                            "homes": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/EHomeD"
+                                }
+                            },
+                            "user": {
+                                "$ref": "#/components/schemas/EUser"
+                            }
+                        }
+                    }
+                }
+            },
+            "EHomeD": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "maxLength": 24,
+                        "type": "string",
+                        "example": "5954e7f249c75f97428b7b23",
+                        "description": "id of the home"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Your House",
+                        "description": "name of the home"
+                    },
+                    "altitude": {
+                        "type": "integer",
+                        "example": 89
+                    },
+                    "coordinates": {
+                        "maxItems": 2,
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "example": "-0.12726409999999996, 51.51608619999999"
+                        }
+                    },
+                    "country": {
+                        "type": "string",
+                        "example": "FR"
+                    },
+                    "timezone": {
+                        "type": "string",
+                        "example": "Europe/paris",
+                        "description": "home timezone"
+                    },
+                    "rooms": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/RoomD"
+                        }
+                    },
+                    "modules": {
+                        "type": "array",
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "$ref": "#/components/schemas/NAPlug"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/NATherm1"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/NRV"
+                                }
+                            ]
+                        }
+                    },
+                    "therm_set_point_default_duration": {
+                        "type": "integer",
+                        "example": 180,
+                        "description": "default duration for a setpoint"
+                    },
+                    "schedules": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Schedules"
+                        },
+                        "description": "array of heating schedule objects"
+                    },
+                    "therm_mode": {
+                        "type": "string",
+                        "example": "schedule",
+                        "description": "mode of the home (schedule, away, frost_guard)"
+                    }
+                }
+            },
+            "NRV": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "01:00:00:00:0e:e0",
+                        "description": "module id"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "NRV",
+                        "description": "module type"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "thermostat relay",
+                        "description": "name of the module"
+                    },
+                    "setup_date": {
+                        "type": "number",
+                        "example": 1498736626,
+                        "description": "date the module was setup"
+                    },
+                    "room_id": {
+                        "type": "number",
+                        "example": 2016185224,
+                        "description": "room where the module is placed"
+                    },
+                    "bridge": {
+                        "type": "string",
+                        "example": "01:00:00:00:0e:e0",
+                        "description": "mac adress of the relay"
+                    }
+                }
+            },
+            "NATherm1": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "01:00:00:00:0e:e0",
+                        "description": "id of the module"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "NATherm1",
+                        "description": "type of the module"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "thermostat relay",
+                        "description": "name of the module"
+                    },
+                    "setup_date": {
+                        "type": "number",
+                        "example": 1498736626,
+                        "description": "date the module was setup"
+                    },
+                    "room_id": {
+                        "type": "number",
+                        "example": 2016185224,
+                        "description": "room where the module is placed"
+                    },
+                    "bridge": {
+                        "type": "string",
+                        "example": "01:00:00:00:0e:e0",
+                        "description": "mac adress of the relay"
+                    }
+                }
+            },
+            "NAPlug": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "01:00:00:00:0e:e0",
+                        "description": "id of the module"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "NAPlug",
+                        "description": "type of the module"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "thermostat relay",
+                        "description": "date the module was setup"
+                    },
+                    "setup_date": {
+                        "type": "number",
+                        "example": 1498736626,
+                        "description": "date the module was setup"
+                    },
+                    "module_bridged": {
+                        "type": "array",
+                        "description": "name of the module",
+                        "items": {
+                            "type": "string",
+                            "example": "02:00:00:00:0e:e0, 03:00:00:00:0e:e0"
+                        }
+                    }
+                }
+            },
+            "EUser": {
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "langage": {
+                        "type": "string",
+                        "example": "fr-FR"
+                    },
+                    "locale": {
+                        "type": "string",
+                        "example": "fr-FR"
+                    },
+                    "feel_like_algorithm": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "unit_pressure": {
+                        "maximum": 2,
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "unit_system": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "unit_wind": {
+                        "maximum": 4,
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "id": {
+                        "maxLength": 24,
+                        "type": "string",
+                        "example": "5c81004fd6e33f0b008b4df2"
+                    }
+                }
+            },
+            "RoomD": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 3466299980,
+                        "description": "id of the room"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "myRoom",
+                        "description": "name of the room"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "Kitchen",
+                        "description": "type of the room"
+                    },
+                    "module_ids": {
+                        "type": "array",
+                        "description": "array of the modules associated to this room",
+                        "items": {
+                            "type": "string",
+                            "example": "09:00:00:00:0e:e0"
+                        }
+                    }
+                }
+            },
+            "Schedules": {
+                "type": "object",
+                "properties": {
+                    "timetable": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Timetable"
+                        }
+                    },
+                    "zones": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ZonesSchedules"
+                        }
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "mySchedule",
+                        "description": "name of the schedule"
+                    }
+                }
+            },
+            "Timetable": {
+                "type": "object",
+                "properties": {
+                    "zone_id": {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "id of the zone"
+                    },
+                    "m_offset": {
+                        "type": "integer",
+                        "example": 360,
+                        "description": "offset in minutes since Monday 00:00:01"
+                    }
+                }
+            },
+            "ZonesSchedules": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "Confort",
+                        "description": "name of the zone"
+                    },
+                    "id": {
+                        "type": "number",
+                        "example": 1,
+                        "description": "id of the zone"
+                    },
+                    "type": {
+                        "type": "number",
+                        "example": 1,
+                        "description": "type of the zone (0 = day, 1 = night, 2 = away, 3 = frost guard, 4 = custom, 5 = eco, 8 = comfort)"
+                    },
+                    "rooms": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "example": 201618522,
+                                    "description": "id of the room"
+                                },
+                                "therm_setpoint_temperature": {
+                                    "type": "number",
+                                    "example": 15,
+                                    "description": "setpoint temperature"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "Zones": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "Confort"
+                    },
+                    "id": {
+                        "type": "number",
+                        "example": 1
+                    },
+                    "type": {
+                        "type": "number",
+                        "example": 1
+                    },
+                    "rooms_temp": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "room_id": {
+                                    "type": "string",
+                                    "example": 201618522
+                                },
+                                "temp": {
+                                    "type": "number",
+                                    "example": 15
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "ServerResponse": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "example": "ok"
+                    },
+                    "time_exec": {
+                        "type": "string",
+                        "example": "0.060059070587158"
+                    },
+                    "time_server": {
+                        "type": "string",
+                        "example": "1553777827"
+                    }
+                }
+            },
+            "InvalidServerResponse": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "type": "object",
+                        "properties": {
+                            "code": {
+                                "type": "number",
+                                "example": 21
+                            },
+                            "message": {
+                                "type": "string",
+                                "example": "invalid [parameter]"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "OAuth2": {
+                "type": "oauth2",
+                "flows": {
+                    "authorizationCode": {
+                        "authorizationUrl": "https://api.netatmo.com/oauth2/authorize",
+                        "tokenUrl": "https://api.netatmo.com/oauth2/token",
+                        "scopes": {
+                            "read_station": "read station data",
+                            "read_thermostat": "read energy data",
+                            "write_thermostat": "control energy products"
+                        }
+                    }
+                }
+            },
+            "BasicAuth": {
+                "type": "http",
+                "scheme": "basic"
+            },
+            "BearerAuth": {
+                "type": "http",
+                "scheme": "bearer"
+            }
+        }
+    }
+}

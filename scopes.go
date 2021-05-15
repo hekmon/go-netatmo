@@ -26,3 +26,13 @@ const (
 	// read_homecoach: to read data coming from Smart Indoor Air Quality Monitor (gethomecoachsdata)
 	ScopeHomeCoachRead Scope = "read_homecoach"
 )
+
+type Scopes []Scope
+
+func (sc Scopes) toStrSlice() (output []string) {
+	output = make([]string, len(sc))
+	for index, scope := range sc {
+		output[index] = string(scope)
+	}
+	return
+}

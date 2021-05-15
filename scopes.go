@@ -1,38 +1,37 @@
 package netatmo
 
-// Scope is used to hold all netatmo API scopes.
-// https://dev.netatmo.com/apidocumentation/oauth#scopes
-type Scope string
+import "strings"
+
+/*
+	Scopes
+	https://dev.netatmo.com/apidocumentation/oauth#scopes
+*/
 
 const (
 	// ScopeStationRead: to retrieve weather station data (Getstationsdata, Getmeasure)
-	ScopeStationRead Scope = "read_station"
+	ScopeStationRead = "read_station"
 	// ScopeThermostatRead: to retrieve thermostat data (Homestatus, Getroommeasure...)
-	ScopeThermostatRead Scope = "read_thermostat"
+	ScopeThermostatRead = "read_thermostat"
 	// ScopeThermostatWrite: to set up the thermostat (Synchomeschedule, Setroomthermpoint...)
-	ScopeThermostatWrite Scope = "write_thermostat"
+	ScopeThermostatWrite = "write_thermostat"
 	// ScopeCameraRead: to retrieve Smart Indoor Cameradata (Gethomedata, Getcamerapicture...)
-	ScopeCameraRead Scope = "read_camera"
+	ScopeCameraRead = "read_camera"
 	// ScopeCameraWrite: to inform the Smart Indoor Camera that a specific person or everybody has left the Home (Setpersonsaway, Setpersonshome)
-	ScopeCameraWrite Scope = "write_camera"
+	ScopeCameraWrite = "write_camera"
 	// ScopeCameraAccess: to access the camera, the videos and the live stream
-	ScopeCameraAccess Scope = "access_camera"
+	ScopeCameraAccess = "access_camera"
 	// ScopePresenceRead: to retrieve Smart Outdoor Camera data (Gethomedata, Getcamerapicture...)
-	ScopePresenceRead Scope = "read_presence"
+	ScopePresenceRead = "read_presence"
 	// ScopePresenceAccess: to access the camera, the videos and the live stream
-	ScopePresenceAccess Scope = "access_presence"
+	ScopePresenceAccess = "access_presence"
 	// ScopeSmokeDetectorRead: to retrieve the Smart Smoke Alarm informations and events (Gethomedata, Geteventsuntil...)
-	ScopeSmokeDetectorRead Scope = "read_smokedetector"
+	ScopeSmokeDetectorRead = "read_smokedetector"
 	// read_homecoach: to read data coming from Smart Indoor Air Quality Monitor (gethomecoachsdata)
-	ScopeHomeCoachRead Scope = "read_homecoach"
+	ScopeHomeCoachRead = "read_homecoach"
 )
 
-type Scopes []Scope
+type Scopes []string
 
-func (sc Scopes) toStrSlice() (output []string) {
-	output = make([]string, len(sc))
-	for index, scope := range sc {
-		output[index] = string(scope)
-	}
-	return
+func (sc Scopes) AuthURLValue() (output string) {
+	return strings.Join(sc, " ")
 }

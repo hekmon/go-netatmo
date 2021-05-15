@@ -45,8 +45,8 @@ func GetUserAuthorizationURL(ctx context.Context, conf OAuth2BaseConfig, uniqID 
 	customClient.CheckRedirect = func(req *http.Request, via []*http.Request) error {
 		return http.ErrUseLastResponse
 	}
-	// POST request expecting final URL to be on the 302 Location header response
-	generateURL := GenerateOAuth2Config(conf).AuthCodeURL(uniqID, oauth2.AccessTypeOffline)
+	// Generate POST request expecting final URL to be on the 302 Location header response
+	generateURL := GenerateOAuth2Config(conf).AuthCodeURL(uniqID)
 	req, err := http.NewRequestWithContext(ctx, "POST", generateURL, nil)
 	if err != nil {
 		err = fmt.Errorf("failed to forge a HTTP request using '%s' as base URL: %w", generateURL, err)
@@ -80,6 +80,6 @@ func GenerateOAuth2Config(conf OAuth2BaseConfig) (oac *oauth2.Config) {
 			AuthStyle: oauth2.AuthStyleInParams,
 		},
 		RedirectURL: conf.RedirectURL,
-		Scopes:      conf.Scopes.toStrSlice(),
+		Scopes:      conf.Scopes,
 	}
 }

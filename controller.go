@@ -6,12 +6,13 @@ import (
 	"fmt"
 	"net/http"
 
+	cleanhttp "github.com/hashicorp/go-cleanhttp"
 	"golang.org/x/oauth2"
 )
 
 /*
-	This is one exemple satisfying the Client interface required by the sub packages (weather, energy, etc...).
-	You can use this one, or make your own and still being able tu use the bindings off the sub packages.
+	This is a reference OAuth2 netatmo api client wrapper satisfying the Client interface required by the sub packages (weather, energy, etc..).
+	You can use this one, or make your own and still being able tu use the bindings off the sub packages as long as the interface is respected.
 */
 
 // Controller can act as a netatmo API Client.
@@ -29,8 +30,15 @@ type Controller struct {
 // Correspond to the 4th step of the OAuth2 autorization code grant type: https://dev.netatmo.com/apidocumentation/oauth#authorization-code
 // customClient can be nil
 func NewClientWithAuthorizationCode(ctx context.Context, conf OAuth2BaseConfig, authCode string, customClient *http.Client) (client Client, err error) {
+	// Spawn a clean client if necessary
+	if customClient == nil {
+		customClient = cleanhttp.DefaultClient()
+	}
 	// Prepare the oauth2 enabled client
-	c := prepareController(ctx, conf, customClient)
+	c := &Controller{
+		ctx:  context.WithValue(ctx, oauth2.HTTPClient, customClient),
+		conf: GenerateOAuth2Config(conf),
+	}
 	// Exchange auth code for access & refresh token
 	c.token, err = c.conf.Exchange(c.ctx, authCode,
 		oauth2.SetAuthURLParam("scope", conf.Scopes.AuthURLValue()),
@@ -52,8 +60,15 @@ func NewClientWithAuthorizationCode(ctx context.Context, conf OAuth2BaseConfig, 
 // https://dev.netatmo.com/apidocumentation/oauth#client-credential
 // customClient can be nil
 func NewClientWithClientCredentials(ctx context.Context, conf OAuth2BaseConfig, username, password string, customClient *http.Client) (client Client, err error) {
+	// Spawn a clean client if necessary
+	if customClient == nil {
+		customClient = cleanhttp.DefaultClient()
+	}
 	// Prepare the oauth2 enabled client
-	c := prepareController(ctx, conf, customClient)
+	c := &Controller{
+		ctx:  context.WithValue(ctx, oauth2.HTTPClient, customClient),
+		conf: GenerateOAuth2Config(conf),
+	}
 	// Exchange auth code for access & refresh token
 	if c.token, err = c.conf.PasswordCredentialsToken(c.ctx, username, password); err != nil {
 		client = nil
@@ -70,8 +85,15 @@ func NewClientWithClientCredentials(ctx context.Context, conf OAuth2BaseConfig, 
 // NewClientWithToken allows to restore an already authenticated client with saved tokens.
 // To check how to retreive a client tokens, check GetTokens()
 func NewClientWithToken(ctx context.Context, conf OAuth2BaseConfig, previousTokens *oauth2.Token, customClient *http.Client) (client Client, err error) {
+	// Spawn a clean client if necessary
+	if customClient == nil {
+		customClient = cleanhttp.DefaultClient()
+	}
 	// Prepare the oauth2 enabled client
-	c := prepareController(ctx, conf, customClient)
+	c := &Controller{
+		ctx:  context.WithValue(ctx, oauth2.HTTPClient, customClient),
+		conf: GenerateOAuth2Config(conf),
+	}
 	// Restore previous auth
 	if previousTokens == nil {
 		err = errors.New("can not create a client with nil tokens")
@@ -80,20 +102,8 @@ func NewClientWithToken(ctx context.Context, conf OAuth2BaseConfig, previousToke
 	c.token = previousTokens
 	// Generate the oauth2 enabled http client
 	c.http = c.conf.Client(c.ctx, c.token)
-	return
-}
-
-func prepareController(ctx context.Context, conf OAuth2BaseConfig, customClient *http.Client) (c *Controller) {
-	// Generate OAuth2 config
-	c = &Controller{
-		conf: GenerateOAuth2Config(conf),
-	}
-	// Use custom client if any
-	if customClient != nil {
-		c.ctx = context.WithValue(ctx, oauth2.HTTPClient, customClient)
-	} else {
-		c.ctx = ctx
-	}
+	// Return the initialized controller as Client
+	client = c
 	return
 }
 
@@ -104,4 +114,5 @@ func (c *Controller) GetTokens() (tokens oauth2.Token) {
 	return *c.token
 }
 
+// ExecuteNetatmoAPIReaquest: TODO
 func (c *Controller) ExecuteNetatmoAPIReaquest() {}

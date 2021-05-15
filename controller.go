@@ -10,8 +10,8 @@ import (
 )
 
 /*
-	This is one exemple satisfying the Client interface required by the sub packages.
-	You can use this one, or make your own and still being able tu use the bindings on the sub packages.
+	This is one exemple satisfying the Client interface required by the sub packages (weather, energy, etc...).
+	You can use this one, or make your own and still being able tu use the bindings off the sub packages.
 */
 
 // Controller can act as a netatmo API Client.

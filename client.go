@@ -17,7 +17,7 @@ type Client interface {
 }
 
 // OAuth2Config contains basic OAuth2 related information
-// in order to configure a Controller as Client.
+// in order to configure the full OAuth2 conf.
 type OAuth2Config struct {
 	ClientID     string
 	ClientSecret string

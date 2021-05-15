@@ -63,6 +63,8 @@ func NewClientWithClientCredentials(ctx context.Context, conf OAuth2BaseConfig, 
 	return
 }
 
+// NewClientWithToken allows to restore an already authenticated client with saved tokens.
+// To check how to retreive a client tokens, check GetTokens()
 func NewClientWithToken(ctx context.Context, conf OAuth2BaseConfig, previousTokens *oauth2.Token, customClient *http.Client) (client Client, err error) {
 	// Prepare the oauth2 enabled client
 	c := prepareController(ctx, conf, customClient)

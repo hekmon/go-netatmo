@@ -31,6 +31,8 @@ type OAuth2BaseConfig struct {
 	RedirectURL  string // optional, if set it must match the one defined in the application profil on netatmo dev platform
 }
 
+// GetUserAuthorizationURL retreive the real auth URL you must redirect your user to in order for him to allow your app and trigger
+// your redirect URL set in your app profil.
 func GetUserAuthorizationURL(ctx context.Context, conf OAuth2BaseConfig, uniqID string, customClient *http.Client) (userAuthURL *url.URL, err error) {
 	// Spawn an http client if necessary or clone the given one
 	if customClient == nil {

@@ -1,0 +1,1359 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "Netatmo - Weather",
+        "description": "This is a sample test for describing NETATMO's APIs with the OAS3 standard definition using swagger.",
+        "termsOfService": "https://dev.netatmo.com/resources/legal",
+        "contact": {
+            "name": "Contact API Netatmo",
+            "url": "https://dev.netatmo.com/resources/legal",
+            "email": "contact-api@netatmo.com"
+        },
+        "license": {
+            "name": "Netatmo Legal",
+            "url": "https://dev.netatmo.com/resources/legal"
+        },
+        "version": "1.1.2"
+    },
+    "externalDocs": {
+        "description": "Find out more about Netatmo API",
+        "url": "https://dev.netatmo.com/resources/technical/introduction"
+    },
+    "servers": [
+        {
+            "url": "https://api.netatmo.com/api",
+            "description": "Netatmo's API endpoint"
+        }
+    ],
+    "tags": [
+        {
+            "name": "Public data",
+            "description": "(open outdoor module only)"
+        },
+        {
+            "name": "User",
+            "description": "Info - User"
+        },
+        {
+            "name": "Weather Station",
+            "description": "Info - ALl weather station & Modules data",
+            "externalDocs": {
+                "description": "Homesdata",
+                "url": "https://dev.netatmo.com/resources/technical/reference/weather"
+            }
+        }
+    ],
+    "paths": {
+        "/getpublicdata": {
+            "get": {
+                "tags": [
+                    "Weather",
+                    "Weather Station",
+                    "Public data"
+                ],
+                "summary": "Retrieves publicly shared weather data from Outdoor Modules within a predefined area.",
+                "description": "scope/none_required",
+                "operationId": "getpublicdata",
+                "parameters": [
+                    {
+                        "name": "lat_ne",
+                        "in": "query",
+                        "description": "latitude of the north east corner of the requested area. -85 <= lat_ne <= 85 and lat_ne>lat_sw",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "number",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "lon_ne",
+                        "in": "query",
+                        "description": "Longitude of the north east corner of the requested area. -180 <= lon_ne <= 180 and lon_ne>lon_sw",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "number",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "lat_sw",
+                        "in": "query",
+                        "description": "latitude of the south west corner of the requested area. -85 <= lat_sw <= 85",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "number",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "lon_sw",
+                        "in": "query",
+                        "description": "Longitude of the south west corner of the requested area. -180 <= lon_sw <= 180",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "number",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "required_data",
+                        "in": "query",
+                        "description": "To filter stations based on relevant measurements you want (e.g. rain will only return stations with rain gauges). Default is no filter. You can find all measurements available on the Thermostat page.",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": "rain, humidity"
+                        }
+                    },
+                    {
+                        "name": "filter",
+                        "in": "query",
+                        "description": "True to exclude station with abnormal temperature measures. Default is false.",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "boolean",
+                            "example": false
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/PublicData"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/ServerResponse"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvalidServerResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "OAuth": [
+                            "read_station"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/getstationsdata": {
+            "get": {
+                "tags": [
+                    "Weather",
+                    "Weather Station"
+                ],
+                "summary": "Returns data from a user Weather Stations (measures and device specific data).",
+                "description": "scope/read_station",
+                "operationId": "getstationdata",
+                "parameters": [
+                    {
+                        "name": "device_id",
+                        "in": "query",
+                        "description": "Weather station mac address",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "description": "deprecated",
+                            "example": "70:ee:50:00:00:xx"
+                        }
+                    },
+                    {
+                        "name": "get_favorites",
+                        "in": "query",
+                        "description": "To retrieve user's favorite weather stations. Default is false.",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "boolean",
+                            "example": false
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/StationData"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/ServerResponse"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvalidServerResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "OAuth": [
+                            "read_station"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/getmeasure": {
+            "get": {
+                "tags": [
+                    "Weather",
+                    "Weather Station"
+                ],
+                "summary": "Retrieve data from a device or module",
+                "description": "scope/read_station",
+                "operationId": "getmeasure",
+                "parameters": [
+                    {
+                        "name": "device_id",
+                        "in": "query",
+                        "description": "Weather station mac address",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": "70:ee:50:00:00:xx"
+                        }
+                    },
+                    {
+                        "name": "module_id",
+                        "in": "query",
+                        "description": "module mac address",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": "70:ee:50:00:00:xx"
+                        }
+                    },
+                    {
+                        "name": "scale",
+                        "in": "query",
+                        "description": "Timelapse between two measurements",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "example": "30min",
+                                "enum": [
+                                    "30min",
+                                    "1hour",
+                                    "3hours",
+                                    "1day",
+                                    "1week",
+                                    "1month"
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Timelapse between two measurements. Timelapse between two measurements. temperature(°C), co2(ppm), humidity(%), pressure(mbar), noise(db), rain(mm), windStrength(km/h), windAngle(angles), guststrength(km/h), gustAngle(angles). \\r 30min-1-3hours = min_temp, max_temp, min_hum, max_hum, min_pressure, max_pressure, min_noise, max_noise,sum_rain. 1day-1week-1month = date_max_gust, date_max_hum, min_pressure, date_min_pressure, date_max_pressure, min_noise, date_min_noise, max_noise, date_max_noise, date_min_co2, date_max_co2",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "temperature",
+                                    "humidity",
+                                    "pressure",
+                                    "co2",
+                                    "noise",
+                                    "rain",
+                                    "windstrength",
+                                    "windangle",
+                                    "guststrength",
+                                    "gustangle",
+                                    "min_temp",
+                                    "max_temp",
+                                    "date_min_temp",
+                                    "date_max_temp",
+                                    "min_hum",
+                                    "max_hum",
+                                    "min_pressure",
+                                    "max_pressure",
+                                    "min_noise",
+                                    "max_noise",
+                                    "sum_rain",
+                                    "date_max_gust",
+                                    "date_max_hum",
+                                    "min_pressure",
+                                    "date_min_pressure",
+                                    "date_max_pressure",
+                                    "min_noise",
+                                    "date_min_noise",
+                                    "max_noise",
+                                    "date_max_noise",
+                                    "date_min_co2",
+                                    "date_max_co2"
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "name": "date_begin",
+                        "in": "query",
+                        "description": "Timestamp of the first measure to retrieve. Default is null.",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "number",
+                            "example": 1459265427
+                        }
+                    },
+                    {
+                        "name": "date_end",
+                        "in": "query",
+                        "description": "Timestamp of the last measure to retrieve (default and max are 1024). Default is null.",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "number",
+                            "example": 2459265427
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Maximum number of measurements (default and max are 1024)",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "number",
+                            "example": 1024
+                        }
+                    },
+                    {
+                        "name": "optimize",
+                        "in": "query",
+                        "description": "Determines the format of the answer. Default is true. For mobile apps we recommend True and False if bandwidth isn't an issue as it is easier to parse.",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "boolean",
+                            "example": false
+                        }
+                    },
+                    {
+                        "name": "real_time",
+                        "in": "query",
+                        "description": "If scale different than max, timestamps are by default offset + scale/2. To get exact timestamps, use true. Default is false.",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "boolean",
+                            "example": false
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/body_Measure_Get"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/ServerResponse"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvalidServerResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "OAuth": [
+                            "read_station"
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "body_Measure_Get": {
+                "type": "object",
+                "properties": {
+                    "body": {
+                        "items": {
+                            "$ref": "#/components/schemas/Measure_Get"
+                        }
+                    }
+                }
+            },
+            "Measure_Get": {
+                "type": "object",
+                "properties": {
+                    "beg_time": {
+                        "type": "number",
+                        "example": 1513295900
+                    },
+                    "step_time": {
+                        "type": "number",
+                        "example": 1800
+                    },
+                    "value": {
+                        "type": "array",
+                        "items": {
+                            "type": "number",
+                            "example": 50
+                        }
+                    }
+                }
+            },
+            "Measure": {
+                "type": "object",
+                "properties": {
+                    "mac_address_NAModule1": {
+                        "type": "object",
+                        "properties": {
+                            "res": {
+                                "type": "object",
+                                "properties": {
+                                    "time_stamp": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "number",
+                                            "example": "20, 60"
+                                        }
+                                    }
+                                }
+                            },
+                            "type": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "example": "temperature"
+                                }
+                            }
+                        }
+                    },
+                    "mac_address_NAMain": {
+                        "type": "object",
+                        "properties": {
+                            "res": {
+                                "type": "object",
+                                "properties": {
+                                    "time_stamp": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "number",
+                                            "example": 1011.3
+                                        }
+                                    }
+                                }
+                            },
+                            "type": {
+                                "type": "string",
+                                "example": "pressure"
+                            }
+                        }
+                    },
+                    "mac_address_NAModule3": {
+                        "type": "object",
+                        "properties": {
+                            "rain_60min": {
+                                "type": "number",
+                                "example": 0
+                            },
+                            "rain_24h": {
+                                "type": "number",
+                                "example": 0
+                            },
+                            "rain_live": {
+                                "type": "number",
+                                "example": 0
+                            },
+                            "rain_timeutc": {
+                                "type": "number",
+                                "example": 1555675431
+                            }
+                        }
+                    },
+                    "mac_address_NAModule2": {
+                        "type": "object",
+                        "properties": {
+                            "wind_strengh": {
+                                "type": "number",
+                                "example": 10
+                            },
+                            "wind_angle": {
+                                "type": "number",
+                                "example": 259
+                            },
+                            "gust_strenght": {
+                                "type": "number",
+                                "example": 17
+                            },
+                            "gust_angle": {
+                                "type": "number",
+                                "example": 270
+                            },
+                            "wind_timeutc": {
+                                "type": "number",
+                                "example": 1555675431
+                            }
+                        }
+                    }
+                }
+            },
+            "StationData": {
+                "type": "object",
+                "properties": {
+                    "body": {
+                        "type": "object",
+                        "properties": {
+                            "devices": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "_id": {
+                                            "type": "string",
+                                            "example": "70:ee:50:22:a3:00",
+                                            "description": "mac address of the device"
+                                        },
+                                        "date_setup": {
+                                            "type": "number",
+                                            "example": 1435834348,
+                                            "description": "date when the weather station was set up"
+                                        },
+                                        "last_setup": {
+                                            "type": "number",
+                                            "example": 1435834348,
+                                            "description": "timestamp of the last installation"
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "example": "NAMain",
+                                            "description": "type of the device"
+                                        },
+                                        "last_status_store": {
+                                            "type": "number",
+                                            "example": 1555677748,
+                                            "description": "timestamp of the last status update"
+                                        },
+                                        "module_name": {
+                                            "type": "string",
+                                            "example": "Indoor",
+                                            "description": "name of the module"
+                                        },
+                                        "firmware": {
+                                            "type": "number",
+                                            "example": 137,
+                                            "description": "version of the software"
+                                        },
+                                        "last_upgrade": {
+                                            "type": "number",
+                                            "example": 1512405614,
+                                            "description": "timestamp of the last upgrade"
+                                        },
+                                        "wifi_status": {
+                                            "type": "number",
+                                            "example": 55,
+                                            "description": "wifi status per Base station. (86=bad, 56=good)"
+                                        },
+                                        "reachable": {
+                                            "type": "boolean",
+                                            "example": true,
+                                            "description": "true if the station connected to Netatmo cloud within the last 4 hours"
+                                        },
+                                        "co2_calibrating": {
+                                            "type": "boolean",
+                                            "example": false,
+                                            "description": "true if the station is calibrating"
+                                        },
+                                        "station_name": {
+                                            "type": "string",
+                                            "example": "Casa",
+                                            "description": "name of the station - DO NOT USE ANYMORE - use home_name and module_name instead"
+                                        },
+                                        "data_type": {
+                                            "type": "array",
+                                            "description": "array of data measured by the device (e.g. \"Temperature\",\"Humidity\")",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "place": {
+                                            "$ref": "#/components/schemas/Place"
+                                        },
+                                        "read_only": {
+                                            "type": "boolean",
+                                            "example": true,
+                                            "description": "true if the user owns the station, false if he is invited to a station"
+                                        },
+                                        "home_id": {
+                                            "type": "string",
+                                            "example": "594xxxxxxxxxdb",
+                                            "description": "id of the home where the station is placed"
+                                        },
+                                        "home_name": {
+                                            "type": "string",
+                                            "example": "Home",
+                                            "description": "name of the home where the station is placed"
+                                        },
+                                        "dashboard_data": {
+                                            "$ref": "#/components/schemas/Dashboard_data_weatherstation"
+                                        },
+                                        "modules": {
+                                            "type": "array",
+                                            "items": {
+                                                "oneOf": [
+                                                    {
+                                                        "$ref": "#/components/schemas/Indoor_Module"
+                                                    },
+                                                    {
+                                                        "$ref": "#/components/schemas/Outdoor_Module"
+                                                    },
+                                                    {
+                                                        "$ref": "#/components/schemas/Rain_Module"
+                                                    },
+                                                    {
+                                                        "$ref": "#/components/schemas/Wind_Module"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "user": {
+                                "$ref": "#/components/schemas/User_Weather"
+                            }
+                        }
+                    }
+                }
+            },
+            "Dashboard_data_weatherstation": {
+                "description": "Weather - Weather station, getstationdata",
+                "type": "object",
+                "properties": {
+                    "time_utc": {
+                        "type": "number",
+                        "example": 1555677739,
+                        "description": "timestamp when data was measured"
+                    },
+                    "Temperature": {
+                        "type": "number",
+                        "example": 23.7,
+                        "description": "temperature (in °C)"
+                    },
+                    "CO2": {
+                        "type": "number",
+                        "example": 967,
+                        "description": "CO2 level (in ppm)"
+                    },
+                    "Humidity": {
+                        "type": "number",
+                        "example": 41,
+                        "description": "humidity (in %)"
+                    },
+                    "Noise": {
+                        "type": "number",
+                        "example": 42,
+                        "description": "noise level (in dB)"
+                    },
+                    "Pressure": {
+                        "type": "number",
+                        "example": 997.6,
+                        "description": "surface pressure in mbar"
+                    },
+                    "AbsolutePressure": {
+                        "type": "number",
+                        "example": 1017.4,
+                        "description": "sea-level pressure in mbar"
+                    },
+                    "min_temp": {
+                        "type": "number",
+                        "example": 21.2
+                    },
+                    "max_temp": {
+                        "type": "number",
+                        "example": 27.4,
+                        "description": "maximum temperature measured"
+                    },
+                    "date_min_temp": {
+                        "type": "number",
+                        "example": 1555631374
+                    },
+                    "date_max_temp": {
+                        "type": "number",
+                        "example": 1555662436
+                    },
+                    "temp_trend": {
+                        "type": "string",
+                        "example": "up",
+                        "description": "trend for the last 12h (up, down, stable)"
+                    },
+                    "pressure_trend": {
+                        "type": "string",
+                        "example": "up",
+                        "description": "trend for the last 12h (up, down, stable)"
+                    }
+                }
+            },
+            "Outdoor_Module": {
+                "description": "Weather - Weather module outdoor - getstationsdata",
+                "type": "object",
+                "properties": {
+                    "_id": {
+                        "type": "string",
+                        "example": "06:00:00:02:47:00"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "NAModule1"
+                    },
+                    "module_name": {
+                        "type": "string",
+                        "example": "Outdoor Module"
+                    },
+                    "data_type": {
+                        "type": "array",
+                        "description": "Array of data measured by the device (e.g. \"Temperature\",\"Humidity\")",
+                        "items": {
+                            "type": "string",
+                            "example": "Temperature, Humidity"
+                        }
+                    },
+                    "last_setup": {
+                        "type": "number",
+                        "example": 1435834348,
+                        "description": "timestamp of the last installation"
+                    },
+                    "reachable": {
+                        "type": "boolean",
+                        "example": true,
+                        "description": "true if the station connected to Netatmo cloud within the last 4 hours"
+                    },
+                    "dashboard_data": {
+                        "type": "object",
+                        "properties": {
+                            "time_utc": {
+                                "type": "number",
+                                "example": 1555677739,
+                                "description": "timestamp when data was measured"
+                            },
+                            "Temperature": {
+                                "type": "number",
+                                "example": 23.7,
+                                "description": "temperature (in °C)"
+                            },
+                            "Humidity": {
+                                "type": "number",
+                                "example": 41,
+                                "description": "humidity (in %)"
+                            },
+                            "min_temp": {
+                                "type": "number",
+                                "example": 21.2
+                            },
+                            "max_temp": {
+                                "type": "number",
+                                "example": 27.4,
+                                "description": "maximum temperature measured"
+                            },
+                            "date_min_temp": {
+                                "type": "number",
+                                "example": 1555631374
+                            },
+                            "date_max_temp": {
+                                "type": "number",
+                                "example": 1555662436
+                            },
+                            "temp_trend": {
+                                "type": "string",
+                                "example": "up",
+                                "description": "trend for the last 12h (up, down, stable)"
+                            }
+                        }
+                    },
+                    "firmware": {
+                        "type": "number",
+                        "example": 19,
+                        "description": "version of the software"
+                    },
+                    "last_message": {
+                        "type": "number",
+                        "example": 1555677746,
+                        "description": "timestamp of the last measure update"
+                    },
+                    "last_seen": {
+                        "type": "number",
+                        "example": 1555677746,
+                        "description": "timestamp of the last status update"
+                    },
+                    "rf_status": {
+                        "type": "number",
+                        "example": 31,
+                        "description": "Current radio status per module. (90=low, 60=highest)"
+                    },
+                    "battery_vp": {
+                        "type": "number",
+                        "example": 5148,
+                        "description": "current battery status per module"
+                    },
+                    "battery_percent": {
+                        "type": "number",
+                        "example": 58,
+                        "description": "Percentage of battery remaining (10=low)"
+                    }
+                }
+            },
+            "Indoor_Module": {
+                "description": "Weather - Weather module indoor - getstationsdata",
+                "type": "object",
+                "properties": {
+                    "_id": {
+                        "type": "string",
+                        "example": "06:00:00:02:47:00"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "NAModule4"
+                    },
+                    "module_name": {
+                        "type": "string",
+                        "example": "Indoor Module"
+                    },
+                    "data_type": {
+                        "type": "array",
+                        "description": "Array of data measured by the device (e.g. \"Temperature\",\"Humidity\")",
+                        "items": {
+                            "type": "string",
+                            "example": "Temperature, Humidity, CO2"
+                        }
+                    },
+                    "last_setup": {
+                        "type": "number",
+                        "example": 1435834348,
+                        "description": "timestamp of the last installation"
+                    },
+                    "reachable": {
+                        "type": "boolean",
+                        "example": true,
+                        "description": "true if the station connected to Netatmo cloud within the last 4 hours"
+                    },
+                    "dashboard_data": {
+                        "type": "object",
+                        "properties": {
+                            "time_utc": {
+                                "type": "number",
+                                "example": 1555677739,
+                                "description": "timestamp when data was measured"
+                            },
+                            "Temperature": {
+                                "type": "number",
+                                "example": 23.7,
+                                "description": "temperature (in °C)"
+                            },
+                            "CO2": {
+                                "type": "number",
+                                "example": 967
+                            },
+                            "Humidity": {
+                                "type": "number",
+                                "example": 41,
+                                "description": "humidity (in %)"
+                            },
+                            "Pressure": {
+                                "type": "number",
+                                "example": 997.6,
+                                "description": "surface pressure in mbar"
+                            },
+                            "AbsolutePressure": {
+                                "type": "number",
+                                "example": 1017.4,
+                                "description": "sea-level pressure in mbar"
+                            },
+                            "min_temp": {
+                                "type": "number",
+                                "example": 21.2
+                            },
+                            "max_temp": {
+                                "type": "number",
+                                "example": 27.4,
+                                "description": "maximum temperature measured"
+                            },
+                            "date_min_temp": {
+                                "type": "number",
+                                "example": 1555631374
+                            },
+                            "date_max_temp": {
+                                "type": "number",
+                                "example": 1555662436
+                            },
+                            "temp_trend": {
+                                "type": "string",
+                                "example": "up",
+                                "description": "trend for the last 12h (up, down, stable)"
+                            }
+                        }
+                    },
+                    "firmware": {
+                        "type": "number",
+                        "example": 19,
+                        "description": "version of the software"
+                    },
+                    "last_message": {
+                        "type": "number",
+                        "example": 1555677746,
+                        "description": "timestamp of the last measure update"
+                    },
+                    "last_seen": {
+                        "type": "number",
+                        "example": 1555677746,
+                        "description": "timestamp of the last status update"
+                    },
+                    "rf_status": {
+                        "type": "number",
+                        "example": 31,
+                        "description": "Current radio status per module. (90=low, 60=highest)"
+                    },
+                    "battery_vp": {
+                        "type": "number",
+                        "example": 5148,
+                        "description": "current battery status per module"
+                    },
+                    "battery_percent": {
+                        "type": "number",
+                        "example": 58,
+                        "description": "Percentage of battery remaining (10=low)"
+                    }
+                }
+            },
+            "Rain_Module": {
+                "description": "Weather - IN Module, for rain gauge module, getstationdata",
+                "type": "object",
+                "properties": {
+                    "_id": {
+                        "type": "string",
+                        "example": "06:00:00:02:47:00"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "NAModule3"
+                    },
+                    "module_name": {
+                        "type": "string",
+                        "example": "Rain gauge"
+                    },
+                    "data_type": {
+                        "type": "array",
+                        "description": "Array of data measured by the device (e.g. \"Temperature\",\"Humidity\")",
+                        "items": {
+                            "type": "string",
+                            "example": "Rain"
+                        }
+                    },
+                    "last_setup": {
+                        "type": "number",
+                        "example": 1435834348,
+                        "description": "timestamp of the last installation"
+                    },
+                    "reachable": {
+                        "type": "boolean",
+                        "example": true,
+                        "description": "true if the station connected to Netatmo cloud within the last 4 hours"
+                    },
+                    "dashboard_data": {
+                        "type": "object",
+                        "properties": {
+                            "time_utc": {
+                                "type": "number",
+                                "example": 1555677734,
+                                "description": "timestamp when data was measured"
+                            },
+                            "Rain": {
+                                "type": "number",
+                                "example": 0,
+                                "description": "rain in mm"
+                            },
+                            "sum_rain_24": {
+                                "type": "number",
+                                "example": 0,
+                                "description": "rain measured for past 24h(mm)"
+                            },
+                            "sum_rain_1": {
+                                "type": "number",
+                                "example": 0,
+                                "description": "rain measured for the last hour (mm)"
+                            }
+                        }
+                    },
+                    "firmware": {
+                        "type": "number",
+                        "example": 19,
+                        "description": "version of the software"
+                    },
+                    "last_message": {
+                        "type": "number",
+                        "example": 1555677746,
+                        "description": "timestamp of the last measure update"
+                    },
+                    "last_seen": {
+                        "type": "number",
+                        "example": 1555677746,
+                        "description": "timestamp of the last status update"
+                    },
+                    "rf_status": {
+                        "type": "number",
+                        "example": 31,
+                        "description": "Current radio status per module. (90=low, 60=highest)"
+                    },
+                    "battery_vp": {
+                        "type": "number",
+                        "example": 5148,
+                        "description": "current battery status per module"
+                    },
+                    "battery_percent": {
+                        "type": "number",
+                        "example": 58,
+                        "description": "Percentage of battery remaining (10=low)"
+                    }
+                }
+            },
+            "Wind_Module": {
+                "description": "Weather - IN Module, for wind gauge module, getstationdata",
+                "type": "object",
+                "properties": {
+                    "_id": {
+                        "type": "string",
+                        "example": "06:00:00:02:47:00"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "NAModule2"
+                    },
+                    "module_name": {
+                        "type": "string",
+                        "example": "Wind Module"
+                    },
+                    "data_type": {
+                        "type": "array",
+                        "description": "Array of data measured by the device (e.g. \"Temperature\",\"Humidity\")",
+                        "items": {
+                            "type": "string",
+                            "example": "Wind"
+                        }
+                    },
+                    "last_setup": {
+                        "type": "number",
+                        "example": 1435834348,
+                        "description": "timestamp of the last installation"
+                    },
+                    "battery_percent": {
+                        "type": "number",
+                        "example": 58,
+                        "description": "Percentage of battery remaining (10=low)"
+                    },
+                    "reachable": {
+                        "type": "boolean",
+                        "example": true,
+                        "description": "true if the station connected to Netatmo cloud within the last 4 hours"
+                    },
+                    "firmware": {
+                        "type": "number",
+                        "example": 19,
+                        "description": "version of the software"
+                    },
+                    "last_message": {
+                        "type": "number",
+                        "example": 1555677746,
+                        "description": "timestamp of the last measure update"
+                    },
+                    "last_seen": {
+                        "type": "number",
+                        "example": 1555677746,
+                        "description": "timestamp of the last status update"
+                    },
+                    "rf_status": {
+                        "type": "number",
+                        "example": 31,
+                        "description": "Current radio status per module. (90=low, 60=highest)"
+                    },
+                    "battery_vp": {
+                        "type": "number",
+                        "example": 5148,
+                        "description": "current battery status per module"
+                    },
+                    "dashboard_data": {
+                        "type": "object",
+                        "properties": {
+                            "time_utc": {
+                                "type": "number",
+                                "example": 1555677734,
+                                "description": "timestamp when data was measured"
+                            },
+                            "WindStrength": {
+                                "type": "number",
+                                "example": 2,
+                                "description": "wind strenght (km/h)"
+                            },
+                            "WindAngle": {
+                                "type": "number",
+                                "example": 75
+                            },
+                            "GustStrength": {
+                                "type": "number",
+                                "example": 3,
+                                "description": "gust strengh (km/h)"
+                            },
+                            "GustAngle": {
+                                "type": "number",
+                                "example": 75,
+                                "description": "gust angle"
+                            },
+                            "max_wind_str": {
+                                "type": "number",
+                                "example": 4
+                            },
+                            "max_wind_angle": {
+                                "type": "number",
+                                "example": 100
+                            },
+                            "date_max_wind_str": {
+                                "type": "number",
+                                "example": 1555673190
+                            }
+                        }
+                    }
+                }
+            },
+            "PublicData": {
+                "type": "object",
+                "properties": {
+                    "body": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "_id": {
+                                    "type": "string",
+                                    "example": "70:ee:50:22:a3:00"
+                                },
+                                "place": {
+                                    "$ref": "#/components/schemas/Place"
+                                },
+                                "mark": {
+                                    "type": "number",
+                                    "example": 10
+                                },
+                                "measures": {
+                                    "$ref": "#/components/schemas/Measure"
+                                },
+                                "modules": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string",
+                                        "example": "00:00:00:22:ba:aa"
+                                    }
+                                },
+                                "module_types": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "mac_adress": {
+                                                "type": "string",
+                                                "example": "NAModule1"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "Place": {
+                "type": "object",
+                "properties": {
+                    "timezone": {
+                        "type": "string",
+                        "example": "Africa/Lagos",
+                        "description": "Timezone"
+                    },
+                    "country": {
+                        "type": "string",
+                        "example": "EG",
+                        "description": "Country"
+                    },
+                    "altitude": {
+                        "type": "number",
+                        "example": 144,
+                        "description": "Altitude"
+                    },
+                    "location": {
+                        "type": "array",
+                        "items": {
+                            "example": "30.89600807058707, 29.94281464724796",
+                            "description": "Latitude and longitude"
+                        }
+                    }
+                }
+            },
+            "User_Weather": {
+                "type": "object",
+                "properties": {
+                    "mail": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "name@mail.com"
+                    },
+                    "administrative": {
+                        "type": "object",
+                        "properties": {
+                            "reg_locale": {
+                                "type": "string",
+                                "example": "fr-FR",
+                                "description": "user regional preferences (used for displaying date)"
+                            },
+                            "lang": {
+                                "type": "string",
+                                "example": "fr-FR",
+                                "description": "user locale"
+                            },
+                            "country": {
+                                "type": "string",
+                                "example": "FR",
+                                "description": "country"
+                            },
+                            "unit": {
+                                "type": "number",
+                                "example": 0,
+                                "description": "0 -> metric system, 1 -> imperial system"
+                            },
+                            "windunit": {
+                                "type": "number",
+                                "example": 0,
+                                "description": "0 -> kph, 1 -> mph, 2 -> ms, 3 -> beaufort, 4 -> knot"
+                            },
+                            "pressureunit": {
+                                "type": "number",
+                                "example": 0,
+                                "description": "0 -> mbar, 1 -> inHg, 2 -> mmHg"
+                            },
+                            "feel_like_algo": {
+                                "type": "number",
+                                "example": 0,
+                                "description": "algorithm used to compute feel like temperature, 0 -> humidex, 1 -> heat-index"
+                            }
+                        }
+                    }
+                }
+            },
+            "ServerResponse": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "example": "ok"
+                    },
+                    "time_exec": {
+                        "type": "string",
+                        "example": "0.060059070587158"
+                    },
+                    "time_server": {
+                        "type": "string",
+                        "example": "1553777827"
+                    }
+                }
+            },
+            "InvalidServerResponse": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "type": "object",
+                        "properties": {
+                            "code": {
+                                "type": "number",
+                                "example": 0
+                            },
+                            "message": {
+                                "type": "string",
+                                "example": "explicit error"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "OAuth": {
+                "type": "oauth2",
+                "flows": {
+                    "authorizationCode": {
+                        "authorizationUrl": "https://api.netatmo.com/oauth2/authorize",
+                        "tokenUrl": "https://api.netatmo.com/oauth2/token",
+                        "scopes": {
+                            "read_station": "retrieve station  (dataGetstationsdata, Getmeasure)"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

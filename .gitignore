@@ -16,3 +16,6 @@
 
 # VSCode local settings
 .vscode/
+
+# Dev
+weather/out

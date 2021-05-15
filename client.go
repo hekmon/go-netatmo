@@ -32,7 +32,7 @@ type OAuth2BaseConfig struct {
 }
 
 // GetUserAuthorizationURL retreive the real auth URL you must redirect your user to in order for him to allow your app and trigger
-// your redirect URL set in your app profil.
+// your redirect URL set in your app profil. customClient can be nil.
 func GetUserAuthorizationURL(ctx context.Context, conf OAuth2BaseConfig, uniqID string, customClient *http.Client) (userAuthURL *url.URL, err error) {
 	// Spawn an http client if necessary or clone the given one
 	if customClient == nil {
@@ -65,6 +65,7 @@ func GetUserAuthorizationURL(ctx context.Context, conf OAuth2BaseConfig, uniqID 
 		err = fmt.Errorf("unexpected return code from '%s' was expecting %d: %s", generateURL, http.StatusFound, resp.Status)
 		return
 	}
+	// Parse the URL returned in the Location header
 	return url.Parse(resp.Header.Get("Location"))
 }
 

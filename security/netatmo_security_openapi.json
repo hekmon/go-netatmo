@@ -1,0 +1,2513 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "Netatmo - Security",
+        "description": "This is a sample test for describing NETATMO's APIs with the OAS3 standard definition using swagger.",
+        "termsOfService": "https://dev.netatmo.com/resources/legal",
+        "contact": {
+            "name": "Contact API Netatmo",
+            "url": "https://dev.netatmo.com/resources/legal",
+            "email": "contact-api@netatmo.com"
+        },
+        "license": {
+            "name": "Netatmo Legal",
+            "url": "https://dev.netatmo.com/resources/legal"
+        },
+        "version": "1.2"
+    },
+    "externalDocs": {
+        "description": "Find out more about Netatmo API",
+        "url": "https://dev.netatmo.com/resources/technical/introduction"
+    },
+    "servers": [
+        {
+            "url": "https://api.netatmo.com/api",
+            "description": "Netatmo's API endpoint"
+        }
+    ],
+    "tags": [
+        {
+            "name": "User",
+            "description": "Info - User"
+        },
+        {
+            "name": "Home",
+            "description": "Info - Home",
+            "externalDocs": {
+                "description": "Homesdata",
+                "url": "https://dev.netatmo.com/resources/technical/reference/energy/homesdata"
+            }
+        },
+        {
+            "name": "NACamera",
+            "description": "Indoor Camera"
+        },
+        {
+            "name": "NOC",
+            "description": "Outdoor Camera"
+        },
+        {
+            "name": "NSD",
+            "description": "Detecteur de fumée"
+        },
+        {
+            "name": "NACamDoorTag",
+            "description": "Detecteur d'ouverture porte et fenetre"
+        },
+        {
+            "name": "Person",
+            "description": "Person visual identification"
+        },
+        {
+            "name": "Event",
+            "description": "A security event"
+        }
+    ],
+    "paths": {
+        "/gethomedata": {
+            "get": {
+                "tags": [
+                    "Security",
+                    "User",
+                    "Home",
+                    "Person",
+                    "Welcome",
+                    "Presence",
+                    "Smoke Detector",
+                    "Door Tag",
+                    "Event"
+                ],
+                "summary": "Retrieve user's homes and their topology.",
+                "description": "scope/read_camera acces_camera read_presence access_presence read_smokedetector",
+                "operationId": "homesdata",
+                "parameters": [
+                    {
+                        "name": "home_id",
+                        "in": "query",
+                        "description": "Filter by the ID of the home you want",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": "5954e7f249c75f97428b7b23"
+                        }
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "description": "Number of events to retrieve. Default is 30",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "number",
+                            "example": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/SbodyHomesdata"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/ServerResponse"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvalidServerResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "OAuth": [
+                            "read_camera",
+                            "acces_camera",
+                            "read_presence",
+                            "access_presence",
+                            "read_smokedetector"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/geteventsuntil": {
+            "get": {
+                "tags": [
+                    "Security",
+                    "Person",
+                    "Welcome",
+                    "Presence"
+                ],
+                "summary": "Returns all the events until the one specified in the request. This method is available for Welcome, Presence and the Smart Smoke Alarm",
+                "description": "scope/read_camera acces_camera read_presence access_presence read_smokedetect",
+                "operationId": "geteventsuntil",
+                "parameters": [
+                    {
+                        "name": "home_id",
+                        "in": "query",
+                        "description": "Id of the home",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": "5954e7f249c75f97428b7b24"
+                        }
+                    },
+                    {
+                        "name": "event_id",
+                        "in": "query",
+                        "description": "Your request will retrieve all the events until this one",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": "571517eee8ede1ee1bfXXXX"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/bodyEventsList"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {}
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "OAuth": [
+                            "read_camera",
+                            "read_presence",
+                            "read_smokedetector"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/getlasteventof": {
+            "get": {
+                "tags": [
+                    "Security",
+                    "Person",
+                    "Welcome"
+                ],
+                "summary": "Returns most recent events. This method is only available for Welcome.",
+                "description": "scope/read_camera acces_camera",
+                "operationId": "getlasteventof",
+                "parameters": [
+                    {
+                        "name": "home_id",
+                        "in": "query",
+                        "description": "Id of the home",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": "5954e7f249c75f97428b7b24"
+                        }
+                    },
+                    {
+                        "name": "person_id",
+                        "in": "query",
+                        "description": "Your request will retrieve all events of the given home until the most recent event of the given person",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": "1594XXXX-XXX-4XXX-bXXX+B13XX-3060a4XXXXXX"
+                        }
+                    },
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "description": "Number of events to retrieve. Default is 30.",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "number",
+                            "example": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/bodyEventsList"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/ServerResponse"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvalidServerResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "OAuth": [
+                            "read_camera",
+                            "read_presence",
+                            "read_smokedetector"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/getnextevents": {
+            "get": {
+                "tags": [
+                    "Security",
+                    "Person",
+                    "Welcome",
+                    "Presence",
+                    "Smoke Detector",
+                    "Event"
+                ],
+                "summary": "Returns previous events. This method is available for Welcome, Presence and the Smart Smoke Alarm",
+                "description": "scope/read_camera acces_camera read_presence access_presence read_smokedetector",
+                "operationId": "getnextevents",
+                "parameters": [
+                    {
+                        "name": "home_id",
+                        "in": "query",
+                        "description": "Id of the home",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": "5954e7f249c75f97428b7b24"
+                        }
+                    },
+                    {
+                        "name": "event_id",
+                        "in": "query",
+                        "description": "Your request will retrieve events occured before this one",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": "1594XXXX-XXX-4XXX-bXXX+B13XX-3060a4XXXXXX"
+                        }
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "description": "Number of events to retrieve. Default is 30.",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "number",
+                            "example": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/bodyEventsList"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/ServerResponse"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {}
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "OAuth": [
+                            "read_camera",
+                            "acces_camera",
+                            "read_presence",
+                            "access_presence",
+                            "read_smokedetector"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/getcamerapicture": {
+            "get": {
+                "tags": [
+                    "Security",
+                    "Person",
+                    "Welcome",
+                    "Presence"
+                ],
+                "summary": "Returns the snapshot associated to an event.",
+                "description": "scope/none_required",
+                "operationId": "getcamerapicture",
+                "parameters": [
+                    {
+                        "name": "image_id",
+                        "in": "query",
+                        "description": "id of the image (can be retrieved as \"id\" in \"face\" in Gethomedata for Welcome, or as \"id\" in \"snapshot\" in Getnextevents, Getlasteventof and Geteventsuntil)",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": "56c89c83cce37c3673cX0X0X"
+                        }
+                    },
+                    {
+                        "name": "key",
+                        "in": "query",
+                        "description": "Security key to access snapshots",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": "8627b4a961014287d4d208bda4558d68125876d3260456573a65c15394X0X0X0"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "IMAGE": {
+                                            "type": "string",
+                                            "example": "You will retrieve a 120x120 JPG"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvalidServerResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "OAuth": [
+                            "read_camera"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/setpersonsaway": {
+            "post": {
+                "tags": [
+                    "Security",
+                    "Person",
+                    "Welcome"
+                ],
+                "summary": "Sets a person as \"Away\" or the Home as \"Empty\". The event will be added to the user’s timeline. This method is only available for Welcome.",
+                "description": "scope/write_camera",
+                "operationId": "setpersonsaway",
+                "parameters": [
+                    {
+                        "name": "home_id",
+                        "in": "query",
+                        "description": "Id of the home",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": "5954e7f249c75f97428b7b24"
+                        }
+                    },
+                    {
+                        "name": "person_id",
+                        "in": "query",
+                        "description": "If a person_id is specified, that person will be set as \"Away\". If no person_id is specified, the Home will be set as \"Empty\".",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": "1594XXXX-XXX-4XXX-bXXX+B13XX-3060a4XXXXXX"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ServerResponse"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvalidServerResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "OAuth": [
+                            "write_camera"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/setpersonshome": {
+            "post": {
+                "tags": [
+                    "Security",
+                    "Person",
+                    "Welcome"
+                ],
+                "summary": "Sets a person or a group of person \"at home\". The event will be added to the user’s timeline.  This method is only available for Welcome.",
+                "description": "scope/write_camera",
+                "operationId": "setpersonshome",
+                "parameters": [
+                    {
+                        "name": "home_id",
+                        "in": "query",
+                        "description": "Id of the home",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": "5954e7f249c75f97428b7b24"
+                        }
+                    },
+                    {
+                        "name": "person_ids[0]",
+                        "in": "query",
+                        "description": "If a person_id is specified, that person will be set as \"Away\". If no person_id is specified, the Home will be set as \"Empty\".",
+                        "required": false,
+                        "style": "form",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "example": "1594XXXX-XXX-4XXX-bXXX+B13XX-3060a4XXXXXX"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ServerResponse"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvalidServerResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "OAuth": [
+                            "write_camera"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/addwebhook": {
+            "post": {
+                "tags": [
+                    "Security",
+                    "Welcome",
+                    "Presence",
+                    "Smoke Detector",
+                    "Event",
+                    "Door Tag"
+                ],
+                "summary": "Links a callback url to a user. This method is available for Security products.",
+                "description": "scope/read_camera read_presence read_smokedetector",
+                "operationId": "addwebhook",
+                "parameters": [
+                    {
+                        "name": "url",
+                        "in": "query",
+                        "description": "your webhook callback url",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "string",
+                            "example": "https://yourwebhook.com/netatmo"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ServerResponse"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvalidServerResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "OAuth": [
+                            "read_camera",
+                            "read_presence",
+                            "read_smokedetector"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/dropwebhook": {
+            "post": {
+                "tags": [
+                    "Security",
+                    "Welcome",
+                    "Presence",
+                    "Smoke Detector",
+                    "Event",
+                    "Door Tag"
+                ],
+                "summary": "Dissociates a webhook from a user.",
+                "description": "scope/read_camera read_presence read_smokedetector",
+                "operationId": "dropwebhook",
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ServerResponse"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvalidServerResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "bodyHomestatus": {
+                "type": "object",
+                "properties": {
+                    "body": {
+                        "$ref": "#/components/schemas/homestatus"
+                    }
+                }
+            },
+            "homestatus": {
+                "type": "object",
+                "properties": {
+                    "home": {
+                        "$ref": "#/components/schemas/HomeS"
+                    }
+                }
+            },
+            "HomeS": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "maxLength": 24,
+                        "type": "string",
+                        "example": "5954e7f249c75f97428b7b23"
+                    },
+                    "modules": {
+                        "type": "array",
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "$ref": "#/components/schemas/NAPlug_S"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/NRV_S"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/NATherm1_S"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/NIS_S"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/NACamera_S"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/NSD_S"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/NOC_S"
+                                }
+                            ]
+                        }
+                    },
+                    "rooms": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/RoomS"
+                        }
+                    },
+                    "persons": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "example": "54064e1e-b1aa-460f-84a0-40b05bf17607"
+                                },
+                                "last_seen": {
+                                    "type": "string",
+                                    "example": 1563888997
+                                },
+                                "out_of_sight": {
+                                    "type": "boolean"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "RoomS": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 3466299980
+                    },
+                    "reachable": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "therm_measured_temperature": {
+                        "type": "number",
+                        "example": 23
+                    },
+                    "therm_setpoint_temperature": {
+                        "type": "number",
+                        "example": 20
+                    },
+                    "therm_setpoint_mode": {
+                        "type": "string",
+                        "example": "schedule, manual"
+                    },
+                    "therm_setpoint_start_time": {
+                        "type": "number",
+                        "example": "0, 1550000000"
+                    },
+                    "therm_setpoint_end_time": {
+                        "type": "number",
+                        "example": "0, 1550003600"
+                    },
+                    "anticipating": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "open_windows": {
+                        "type": "boolean",
+                        "example": false
+                    }
+                }
+            },
+            "NACamera_S": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "70:ee:50:0c:04:fc"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "NACamera"
+                    },
+                    "monitoring": {
+                        "type": "string",
+                        "enum": [
+                            "on",
+                            "off"
+                        ]
+                    },
+                    "sd_status": {
+                        "type": "number",
+                        "example": 4
+                    },
+                    "alim_status": {
+                        "type": "number",
+                        "example": 2
+                    },
+                    "locked": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "vpn_url": {
+                        "type": "string",
+                        "example": null
+                    },
+                    "is_local": {
+                        "type": "boolean",
+                        "example": true
+                    }
+                }
+            },
+            "NOC_S": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "70:ee:50:0c:04:fc"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "NOC"
+                    },
+                    "monitoring": {
+                        "type": "string",
+                        "enum": [
+                            "on",
+                            "off"
+                        ]
+                    },
+                    "sd_status": {
+                        "type": "number",
+                        "example": 4
+                    },
+                    "alim_status": {
+                        "type": "number",
+                        "example": 2
+                    },
+                    "locked": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "vpn_url": {
+                        "type": "string",
+                        "example": null
+                    },
+                    "is_local": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "floodlight": {
+                        "type": "string",
+                        "enum": [
+                            "on",
+                            "off"
+                        ]
+                    }
+                }
+            },
+            "NSD_S": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "70:ee:50:0c:04:fc"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "NSD"
+                    }
+                }
+            },
+            "NIS_S": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "70:ee:50:0c:04:fc"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "NIS"
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "no_news"
+                    },
+                    "firmware_revision": {
+                        "type": "number",
+                        "example": 106
+                    },
+                    "last_seen": {
+                        "type": "string",
+                        "example": 1567515767
+                    },
+                    "rf_strength": {
+                        "type": "number",
+                        "example": 49
+                    },
+                    "monitoring": {
+                        "type": "string",
+                        "enum": [
+                            "on",
+                            "off"
+                        ]
+                    },
+                    "tamper_detection_enabled": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "alim_source": {
+                        "type": "string",
+                        "example": "battery"
+                    },
+                    "battery_level": {
+                        "type": "number",
+                        "example": 6190
+                    },
+                    "bridge": {
+                        "type": "string",
+                        "example": "70:ee:50:2b:8a:c3"
+                    },
+                    "battery_state": {
+                        "type": "string",
+                        "enum": [
+                            "very_low",
+                            "low",
+                            "medium",
+                            "high",
+                            "full"
+                        ]
+                    }
+                }
+            },
+            "NAPlug_S": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "70:ee:50:0c:04:fc"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "NAPlug"
+                    },
+                    "firmware_revision": {
+                        "type": "number",
+                        "example": 45
+                    },
+                    "rf_strenght": {
+                        "type": "number",
+                        "example": 13
+                    },
+                    "wifi_strenght": {
+                        "type": "number",
+                        "example": 67
+                    }
+                }
+            },
+            "NATherm1_S": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "70:ee:50:0c:04:fc"
+                    },
+                    "reachable": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "NAThem1"
+                    },
+                    "firmware_revision": {
+                        "type": "number",
+                        "example": 45
+                    },
+                    "rf_strenght": {
+                        "type": "number",
+                        "example": 61,
+                        "description": "scale"
+                    },
+                    "battery_level": {
+                        "type": "number",
+                        "example": 3200,
+                        "description": "scale"
+                    },
+                    "boiler_valve_comfort_boost": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "boiler_status": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "anticipating": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "bridge": {
+                        "type": "number",
+                        "example": "01:00:00:00:0e:e0"
+                    },
+                    "battery_state": {
+                        "type": "string",
+                        "enum": [
+                            "very_low",
+                            "low",
+                            "medium",
+                            "high",
+                            "full"
+                        ]
+                    }
+                }
+            },
+            "NRV_S": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "70:ee:50:0c:04:fc"
+                    },
+                    "reachable": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "NRV"
+                    },
+                    "firmware_revision": {
+                        "type": "number",
+                        "example": 45
+                    },
+                    "rf_strenght": {
+                        "type": "number",
+                        "example": 13
+                    },
+                    "battery_level": {
+                        "type": "number",
+                        "example": 2700
+                    },
+                    "bridge": {
+                        "type": "number",
+                        "example": "01:00:00:00:0e:e0"
+                    },
+                    "battery_state": {
+                        "type": "string",
+                        "enum": [
+                            "very_low",
+                            "low",
+                            "medium",
+                            "high"
+                        ]
+                    }
+                }
+            },
+            "EbodyHomesdata": {
+                "type": "object",
+                "properties": {
+                    "body": {
+                        "type": "object",
+                        "properties": {
+                            "homes": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/EHomeD"
+                                }
+                            },
+                            "user": {
+                                "$ref": "#/components/schemas/EUser"
+                            }
+                        }
+                    }
+                }
+            },
+            "EHomeD": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "maxLength": 24,
+                        "type": "string",
+                        "example": "5954e7f249c75f97428b7b23"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Your House"
+                    },
+                    "atlitude": {
+                        "type": "integer",
+                        "example": 89
+                    },
+                    "coordinates": {
+                        "maxItems": 2,
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "example": "-0.12726409999999996, 51.51608619999999"
+                        }
+                    },
+                    "country": {
+                        "type": "string",
+                        "example": "FR"
+                    },
+                    "timezone": {
+                        "type": "string",
+                        "example": "Europe/paris"
+                    },
+                    "room": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/RoomD"
+                        }
+                    },
+                    "modules": {
+                        "type": "array",
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "$ref": "#/components/schemas/NAPlug"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/NATherm1"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/NRV"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/NACamera"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/NIS"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/NOC"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/NSD"
+                                }
+                            ]
+                        }
+                    },
+                    "therm_schedule": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Therm_schedule"
+                        }
+                    },
+                    "therm_set_point_default_duration": {
+                        "type": "integer",
+                        "example": 180
+                    },
+                    "persons": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Persons"
+                        }
+                    },
+                    "schedules": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Schedules"
+                        }
+                    },
+                    "therm_mode": {
+                        "type": "string",
+                        "example": "schedule"
+                    }
+                }
+            },
+            "Schedules": {
+                "type": "object",
+                "properties": {
+                    "timetable": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Timetable"
+                        }
+                    },
+                    "zones": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ZonesSchedules"
+                        }
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "mySchedule"
+                    },
+                    "default": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "away_temp": {
+                        "type": "number",
+                        "example": 14
+                    },
+                    "hg_temp": {
+                        "type": "number",
+                        "example": 6
+                    },
+                    "id": {
+                        "type": "number",
+                        "example": "5954e7f249c75f97428b7b24"
+                    },
+                    "selected": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "therm"
+                    }
+                }
+            },
+            "Therm_schedule": {
+                "type": "object",
+                "properties": {
+                    "timetable": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Timetable"
+                        }
+                    },
+                    "zones": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Zones"
+                        }
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "mySchedule"
+                    },
+                    "default": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "away_temp": {
+                        "type": "number",
+                        "example": 14
+                    },
+                    "hg_temp": {
+                        "type": "number",
+                        "example": 6
+                    },
+                    "id": {
+                        "type": "number",
+                        "example": "5954e7f249c75f97428b7b24"
+                    },
+                    "selected": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "therm"
+                    }
+                }
+            },
+            "Timetable": {
+                "type": "object",
+                "properties": {
+                    "zone_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "m_offset": {
+                        "type": "integer",
+                        "example": 360,
+                        "description": "offset in minutes since Monday 00:00:01"
+                    }
+                }
+            },
+            "Zones": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "Confort"
+                    },
+                    "id": {
+                        "type": "number",
+                        "example": 1
+                    },
+                    "type": {
+                        "type": "number",
+                        "example": 1
+                    },
+                    "rooms_temp": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "room_id": {
+                                    "type": "string",
+                                    "example": 201618522
+                                },
+                                "temp": {
+                                    "type": "number",
+                                    "example": 15
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "ZonesSchedules": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "Confort"
+                    },
+                    "id": {
+                        "type": "number",
+                        "example": 1
+                    },
+                    "type": {
+                        "type": "number",
+                        "example": 1
+                    },
+                    "rooms_temp": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "room_id": {
+                                    "type": "string",
+                                    "example": 201618522
+                                },
+                                "temp": {
+                                    "type": "number",
+                                    "example": 15
+                                }
+                            }
+                        }
+                    },
+                    "rooms": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "example": 201618522
+                                },
+                                "therm_setpoint_temperature": {
+                                    "type": "number",
+                                    "example": 15
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "NRV": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "01:00:00:00:0e:e0"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "NRV"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "thermostat relay"
+                    },
+                    "setup_date": {
+                        "type": "number",
+                        "example": 1498736626
+                    },
+                    "room_id": {
+                        "type": "number",
+                        "example": 2016185224
+                    },
+                    "bridge": {
+                        "type": "string",
+                        "example": "01:00:00:00:0e:e0"
+                    }
+                }
+            },
+            "NATherm1": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "01:00:00:00:0e:e0"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "NATherm1"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "thermostat relay"
+                    },
+                    "setup_date": {
+                        "type": "number",
+                        "example": 1498736626
+                    },
+                    "room_id": {
+                        "type": "number",
+                        "example": 2016185224
+                    },
+                    "bridge": {
+                        "type": "string",
+                        "example": "01:00:00:00:0e:e0"
+                    }
+                }
+            },
+            "NAPlug": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "01:00:00:00:0e:e0"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "NAPlug"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "thermostat relay"
+                    },
+                    "setup_date": {
+                        "type": "number",
+                        "example": 1498736626
+                    },
+                    "module_bridged": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "example": "02:00:00:00:0e:e0, 03:00:00:00:0e:e0"
+                        }
+                    }
+                }
+            },
+            "NACamera": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "70:ee:50:0c:04:fc"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "NACamera"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Indoor Cam"
+                    },
+                    "setup_date": {
+                        "type": "number",
+                        "example": 1563179433
+                    },
+                    "module_bridged": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "example": "02:00:00:00:0e:e0"
+                        }
+                    }
+                }
+            },
+            "NIS": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "01:00:00:00:0e:e0"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "NIS"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Sirène de Welcome 2"
+                    },
+                    "setup_date": {
+                        "type": "number",
+                        "example": 1498736626
+                    },
+                    "bridge": {
+                        "type": "string",
+                        "example": "70:ee:50:2b:8a:c3"
+                    }
+                }
+            },
+            "NOC": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "70:ee:50:0c:04:fc"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "NOC"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Outdoor Cam"
+                    },
+                    "setup_date": {
+                        "type": "number",
+                        "example": 1563179433
+                    },
+                    "room_id": {
+                        "type": "number",
+                        "example": 218654743
+                    }
+                }
+            },
+            "NSD": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "70:ee:50:37:6b:5c"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "NSD"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "smoke detector"
+                    },
+                    "setup_date": {
+                        "type": "number",
+                        "example": 156317943
+                    }
+                }
+            },
+            "Persons": {
+                "type": "object",
+                "description": "Only available if the home own Security Camera",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "19eac686-e636-4382-8bb7-1a1c0c0aa000"
+                    },
+                    "pseudo": {
+                        "type": "string",
+                        "example": "surname"
+                    },
+                    "url": {
+                        "type": "string",
+                        "example": "https://netatmocameraimage.blob.core.windows.net/production/5c5d87e7ea6azeaze78hazuehazueh9889azhehuazueh"
+                    }
+                }
+            },
+            "EUser": {
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "langage": {
+                        "type": "string",
+                        "example": "fr-FR"
+                    },
+                    "locale": {
+                        "type": "string",
+                        "example": "fr-FR"
+                    },
+                    "feel_like_algorithm": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "unit_pressure": {
+                        "maximum": 2,
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "unit_system": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "unit_wind": {
+                        "maximum": 4,
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "id": {
+                        "maxLength": 24,
+                        "type": "string",
+                        "example": "5c81004fd6e33f0b008b4df2"
+                    }
+                }
+            },
+            "RoomD": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 3466299980
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "myRoom"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "Kitchen"
+                    },
+                    "module_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "example": "09:00:00:00:0e:e0"
+                        }
+                    }
+                }
+            },
+            "Setstate": {
+                "properties": {
+                    "home": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "example": "57f38312ea00a0ea7f8b49xx"
+                            },
+                            "modules": {
+                                "type": "array",
+                                "items": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "string",
+                                            "example": "70:ee:50:24:9a:98"
+                                        },
+                                        "floodlight": {
+                                            "type": "string",
+                                            "example": "auto"
+                                        },
+                                        "monitoring": {
+                                            "type": "string",
+                                            "example": "on"
+                                        },
+                                        "pincode": {
+                                            "type": "string",
+                                            "example": 1234
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "required": [
+                    "id",
+                    "modules.id"
+                ]
+            },
+            "bodyEventsList": {
+                "properties": {
+                    "body": {
+                        "type": "object",
+                        "properties": {
+                            "events_list": {
+                                "type": "array",
+                                "items": {
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/EventBasic"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/EventMovement"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/EventKnownPerson"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/EventUnknownPerson"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/OutdoorEvent"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "OutdoorEvent": {
+                "type": "object",
+                "description": "first event from list (offset:0) has picture by url, nexts are filename.",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "5715e3bf2baxxxx00000xxxx00000"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "outdoor"
+                    },
+                    "time": {
+                        "type": "number",
+                        "example": 1461052342
+                    },
+                    "camera_id": {
+                        "type": "string",
+                        "example": "70:ee:50:xx:xx:xx"
+                    },
+                    "device_id": {
+                        "type": "string",
+                        "example": "70:ee:50:xx:xx:xx"
+                    },
+                    "video_id": {
+                        "type": "string"
+                    },
+                    "video_status": {
+                        "type": "string",
+                        "example": "available",
+                        "description": "status of the video (recording, deleted or available)"
+                    },
+                    "event_list": {
+                        "type": "array",
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "$ref": "#/components/schemas/OutdoorEventlistUrl"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/OutdoorEventlistFilename"
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "OutdoorEventlistUrl": {
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "human",
+                            "animal",
+                            "vehicle"
+                        ]
+                    },
+                    "time": {
+                        "type": "number",
+                        "example": 1562781951
+                    },
+                    "offset": {
+                        "type": "number",
+                        "example": 0
+                    },
+                    "id": {
+                        "type": "string",
+                        "example": "c81bcf7b-2cfg-4ac9-8455-487ed00c0000"
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Animal détecté"
+                    },
+                    "snapshot": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "example": "5715e16849c75xxxx00000000xxxxx"
+                            },
+                            "version": {
+                                "type": "number",
+                                "example": 1
+                            },
+                            "key": {
+                                "type": "string",
+                                "example": "7ac578d05030d0e170643a787ee0a29663dxxx00000xxxxx00000"
+                            },
+                            "url": {
+                                "type": "string",
+                                "example": "https://netatmocameraimage.blob.core.windows.net/production/1aa"
+                            }
+                        }
+                    },
+                    "vignette": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "example": "5715e16849c75xxxx00000000xxxxx"
+                            },
+                            "version": {
+                                "type": "number",
+                                "example": 1
+                            },
+                            "key": {
+                                "type": "string",
+                                "example": "7ac578d05030d0e170643a787ee0a29663dxxx00000xxxxx00000"
+                            },
+                            "url": {
+                                "type": "string",
+                                "example": "https://netatmocameraimage.blob.core.windows.net/production/1aa00000"
+                            }
+                        }
+                    }
+                }
+            },
+            "OutdoorEventlistFilename": {
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "human",
+                            "animal",
+                            "vehicle"
+                        ]
+                    },
+                    "time": {
+                        "type": "number",
+                        "example": 1562781951
+                    },
+                    "offset": {
+                        "type": "number",
+                        "example": 0
+                    },
+                    "id": {
+                        "type": "string",
+                        "example": "c81bcf7b-2cfg-4ac9-8455-487ed00c0000"
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Animal détecté"
+                    },
+                    "snapshot": {
+                        "type": "object",
+                        "properties": {
+                            "filename": {
+                                "type": "string",
+                                "example": "vod\\/af74631d-8311-42dc-825b-82e3abeaab09\\/events\\/c53b-aze7a.jpg"
+                            }
+                        }
+                    },
+                    "vignette": {
+                        "type": "object",
+                        "properties": {
+                            "filename": {
+                                "type": "string",
+                                "example": "vod\\/af74631d-8311-42dc-825b-82e3abeaab09\\/events\\/c5.jpg"
+                            }
+                        }
+                    }
+                }
+            },
+            "EventBasic": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "5cdd8075872ee27bc03493cb",
+                        "description": "id of the event"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "connection",
+                        "description": "type of events (see written documentation in security section)"
+                    },
+                    "time": {
+                        "type": "number",
+                        "example": 1556636073,
+                        "description": "time of occurence of the event"
+                    },
+                    "camera_id": {
+                        "type": "string",
+                        "example": "70:ee:50:xx:xx:xx",
+                        "description": "id of the camera that detected the event"
+                    },
+                    "device_id": {
+                        "type": "string",
+                        "example": "70:ee:50:xx:xx:xx",
+                        "description": "id of the device that detected the event"
+                    },
+                    "sub_type": {
+                        "type": "string",
+                        "example": 1,
+                        "description": "subtype of SD and Alim events (see written documentation in security section)"
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "missing SD card",
+                        "description": "event description"
+                    }
+                }
+            },
+            "EventKnownPerson": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "5715e3bf2baxxxx00000xxxx00000",
+                        "description": "id of the event"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "person",
+                        "description": "type of the event"
+                    },
+                    "time": {
+                        "type": "number",
+                        "example": 1461052342,
+                        "description": "time of occurence of the event"
+                    },
+                    "camera_id": {
+                        "type": "string",
+                        "example": "70:ee:50:xx:xx:xx",
+                        "description": "id of the camera that detected the event"
+                    },
+                    "device_id": {
+                        "type": "string",
+                        "example": "70:ee:50:xx:xx:xx",
+                        "description": "id of the device that detected the event"
+                    },
+                    "person_id": {
+                        "type": "string",
+                        "example": "a9552acd-d980-xxxx00000xxxx00000",
+                        "description": "id of the person the event is about"
+                    },
+                    "snapshot": {
+                        "$ref": "#/components/schemas/Snapshot"
+                    },
+                    "video_id": {
+                        "type": "string",
+                        "description": "id of the video"
+                    },
+                    "video_status": {
+                        "type": "string",
+                        "example": "available",
+                        "description": "status of the video (recording, deleted or available)"
+                    },
+                    "is_arrival": {
+                        "type": "boolean",
+                        "example": true,
+                        "description": "if person was considered away before being seen during this event"
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "<b>Name</b> a été vu(e)",
+                        "description": "event description"
+                    }
+                }
+            },
+            "EventUnknownPerson": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "5715e3bf2baxxxx00000xxxx00000",
+                        "description": "id of the event"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "person",
+                        "description": "type of the event"
+                    },
+                    "time": {
+                        "type": "number",
+                        "example": 1461052342,
+                        "description": "time of occurence of the event"
+                    },
+                    "camera_id": {
+                        "type": "string",
+                        "example": "70:ee:50:xx:xx:xx",
+                        "description": "id of the camera that detected the event"
+                    },
+                    "device_id": {
+                        "type": "string",
+                        "example": "70:ee:50:xx:xx:xx",
+                        "description": "id of the device that detected the event"
+                    },
+                    "person_id": {
+                        "type": "string",
+                        "example": "a9552acd-d980-xxxx00000xxxx00000",
+                        "description": "id of the person the event is about"
+                    },
+                    "snapshot": {
+                        "$ref": "#/components/schemas/Snapshot"
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "<b>Visage inconnu</b> a été vu(e)"
+                    },
+                    "video_id": {
+                        "type": "string"
+                    },
+                    "video_status": {
+                        "type": "string",
+                        "example": "available",
+                        "description": "status of the video (recording, deleted or available)"
+                    }
+                }
+            },
+            "EventMovement": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "5715e3bf2baxxxx00000xxxx00000",
+                        "description": "id of the event"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "movement",
+                        "description": "type of the event"
+                    },
+                    "time": {
+                        "type": "number",
+                        "example": 1461052342,
+                        "description": "time of occurence of the event"
+                    },
+                    "camera_id": {
+                        "type": "string",
+                        "example": "70:ee:50:xx:xx:xx",
+                        "description": "id of the camera that detected the event"
+                    },
+                    "device_id": {
+                        "type": "string",
+                        "example": "70:ee:50:xx:xx:xx",
+                        "description": "id of the device that detected the event"
+                    },
+                    "snapshot": {
+                        "$ref": "#/components/schemas/Snapshot"
+                    },
+                    "vignette": {
+                        "$ref": "#/components/schemas/Vignette"
+                    },
+                    "video_id": {
+                        "type": "string",
+                        "example": "fd2b25c5-cba8-4b8b-9188-92a95f9d805e"
+                    },
+                    "video_status": {
+                        "type": "string",
+                        "example": "available",
+                        "description": "status of the video (recording, deleted or available)"
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "<b>Mouvement</b> détecté"
+                    }
+                }
+            },
+            "Vignette": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "5715e16849c75xxxx00000000xxxxx"
+                    },
+                    "version": {
+                        "type": "number",
+                        "example": 1
+                    },
+                    "key": {
+                        "type": "string",
+                        "example": "7ac578d05030d0e170643a787ee0a29663dxxx00000xxxxx00000"
+                    },
+                    "url": {
+                        "type": "string",
+                        "example": "https://netatmocameraimage.blob.core.windows.net/production/1aa00000"
+                    }
+                }
+            },
+            "Snapshot": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "5715e16849c75xxxx00000000xxxxx",
+                        "description": "snapshot id"
+                    },
+                    "version": {
+                        "type": "number",
+                        "example": 1
+                    },
+                    "key": {
+                        "type": "string",
+                        "example": "7ac578d05030d0e170643a787ee0a29663dxxx00000xxxxx00000"
+                    },
+                    "url": {
+                        "type": "string",
+                        "example": "https://netatmocameraimage.blob.core.windows.net/production/1aa0000da9ff73af7d8b4c11d6x0000000e589152cc2xxx4c000006016adb11ef7bf5c8947f76f0ffe00000"
+                    }
+                }
+            },
+            "SbodyHomesdata": {
+                "type": "object",
+                "properties": {
+                    "body": {
+                        "type": "object",
+                        "properties": {
+                            "homes": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/SHomeD"
+                                }
+                            },
+                            "user": {
+                                "$ref": "#/components/schemas/User"
+                            },
+                            "global_info": {
+                                "type": "object",
+                                "properties": {
+                                    "show_tags": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "SHomeD": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "maxLength": 24,
+                        "type": "string",
+                        "example": "5954e7f249c75f97428b7b23",
+                        "description": "id of the home"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Your House",
+                        "description": "name of the home"
+                    },
+                    "person": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PersonFace"
+                        },
+                        "description": "array of persons in the home"
+                    },
+                    "place": {
+                        "type": "object",
+                        "properties": {
+                            "city": {
+                                "type": "string",
+                                "example": "Paris",
+                                "description": "city name"
+                            },
+                            "country": {
+                                "type": "string",
+                                "example": "FR",
+                                "description": "country code"
+                            },
+                            "timezone": {
+                                "type": "string",
+                                "example": "Europe/paris",
+                                "description": "timezone"
+                            }
+                        }
+                    },
+                    "camera": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Camera"
+                        },
+                        "description": "array of all cameras in the home"
+                    },
+                    "smokedetectors": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SmokeDetector"
+                        },
+                        "description": "array of all smoke detectors in the home"
+                    },
+                    "events": {
+                        "type": "array",
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "$ref": "#/components/schemas/EventBasic"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/EventMovement"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/EventKnownPerson"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/EventUnknownPerson"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/OutdoorEvent"
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "Camera": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "70:ee:50:11:xx:xx,",
+                        "description": "id of the camera"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "NACamera",
+                        "description": "name of the camera"
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "on"
+                    },
+                    "vpn_url": {
+                        "type": "string",
+                        "example": "https://v12.netatmo.net/restricted/10.255.220.8/13eb95697281499413485cc93e1b8c4b/MTU2NzQ1MDgwMDoeZqWrwYycpVxZGluQAQoP9Y0GGQ,,",
+                        "description": "(restricted return parameter, only returned on OWN camera or with access scope)"
+                    },
+                    "is_local": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "sd_status": {
+                        "type": "string",
+                        "example": "on"
+                    },
+                    "alim_status": {
+                        "type": "string",
+                        "example": "on"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "NameCamera"
+                    },
+                    "modules": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Siren_D"
+                        },
+                        "description": "array of the module associated to the camera"
+                    },
+                    "use_pin_code": {
+                        "type": "boolean",
+                        "example": false,
+                        "description": "true if pincode is required"
+                    },
+                    "last_setup": {
+                        "type": "number",
+                        "example": 1549629699,
+                        "description": "timestamp of the last installation"
+                    }
+                }
+            },
+            "Siren_D": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "70:ee:50:5b:f0:e9"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "NIS"
+                    },
+                    "battery_percent": {
+                        "type": "number",
+                        "example": 84
+                    },
+                    "rf": {
+                        "type": "number",
+                        "example": 68
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "no_news"
+                    },
+                    "monitoring": {
+                        "type": "string",
+                        "example": "on"
+                    },
+                    "alim_source": {
+                        "type": "string",
+                        "example": "battery"
+                    },
+                    "tamper_detection_enabled": {
+                        "type": "boolean"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Welcome's Siren"
+                    }
+                }
+            },
+            "SmokeDetector": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "70:ee:50:11:xx:xx",
+                        "description": "id of the module"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "NSD",
+                        "description": "type of the module"
+                    },
+                    "last_setup": {
+                        "type": "number",
+                        "example": 1549629699,
+                        "description": "timestamp of the last installation"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "NameSmoke",
+                        "description": "name of the module"
+                    }
+                }
+            },
+            "PersonFace": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "6c7916c7-76c3-4e4a-b401-bd5dce69b9a9"
+                    },
+                    "last_seen": {
+                        "type": "number",
+                        "example": 1563888997,
+                        "description": "timestamp of the time the person was last seen"
+                    },
+                    "out_of_sight": {
+                        "type": "boolean",
+                        "example": false,
+                        "description": "true if the person is considered away from home"
+                    },
+                    "face": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "example": "5715e16849c75xxxx00000000xxxxx"
+                            },
+                            "version": {
+                                "type": "number",
+                                "example": 1
+                            },
+                            "key": {
+                                "type": "string",
+                                "example": "7ac578d05030d0e170643a787ee0a29663dxxx00000xxxxx00000"
+                            },
+                            "url": {
+                                "type": "string",
+                                "example": "https://netatmocameraimage.blob.core.windows.net/production/1aa0000da9ff73af7d8b4c11d6x0000000e589152cc2xxx4c000006016adb11ef7bf5c8947f76f0ffe00000"
+                            }
+                        }
+                    },
+                    "pseudo": {
+                        "type": "string",
+                        "example": "Surname",
+                        "description": "if pseudo is missing, the person is unknown"
+                    }
+                }
+            },
+            "User": {
+                "type": "object",
+                "properties": {
+                    "reg_locale": {
+                        "type": "string",
+                        "example": "fr-FR"
+                    },
+                    "lang": {
+                        "type": "string",
+                        "example": "fr-FR"
+                    },
+                    "country": {
+                        "type": "string",
+                        "example": "FR"
+                    },
+                    "mail": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "name@mail.com"
+                    }
+                }
+            },
+            "ServerResponse": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "example": "ok"
+                    },
+                    "time_exec": {
+                        "type": "string",
+                        "example": "0.060059070587158"
+                    },
+                    "time_server": {
+                        "type": "string",
+                        "example": "1553777827"
+                    }
+                }
+            },
+            "InvalidServerResponse": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "type": "object",
+                        "properties": {
+                            "code": {
+                                "type": "number",
+                                "example": 0
+                            },
+                            "message": {
+                                "type": "string",
+                                "example": "explicit error"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "energy_auth": {
+                "type": "oauth2",
+                "flows": {
+                    "implicit": {
+                        "authorizationUrl": "https://api.netatmo.com/oauth2/token",
+                        "scopes": {
+                            "read_station": "retrieve station  (dataGetstationsdata, Getmeasure)",
+                            "read_thermostat": "to retrieve thermostat data ( Getroommeasure, Homestatus)",
+                            "write_thermostat": "set up the thermostat (Synchomeschedule, Setroomthermpoint)"
+                        }
+                    }
+                }
+            },
+            "api_key": {
+                "type": "apiKey",
+                "name": "api_key",
+                "in": "header"
+            }
+        }
+    }
+}

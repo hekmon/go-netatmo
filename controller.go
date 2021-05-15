@@ -69,7 +69,7 @@ func NewClientWithClientCredentials(ctx context.Context, conf OAuth2BaseConfig, 
 		ctx:  context.WithValue(ctx, oauth2.HTTPClient, customClient),
 		conf: GenerateOAuth2Config(conf),
 	}
-	// Exchange auth code for access & refresh token
+	// Get tokens with credentials loging
 	if c.token, err = c.conf.PasswordCredentialsToken(c.ctx, username, password); err != nil {
 		client = nil
 		err = fmt.Errorf("can not get oauth2 tokens with client credentials: %w", err)

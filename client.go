@@ -47,11 +47,20 @@ func GetUserAuthorizationURL(ctx context.Context, conf OAuth2BaseConfig, uniqID 
 	}
 	// POST request expecting final URL to be on the 302 Location header response
 	generateURL := GenerateOAuth2Config(conf).AuthCodeURL(uniqID, oauth2.AccessTypeOffline)
-	resp, err := customClient.PostForm(generateURL, nil)
+	req, err := http.NewRequestWithContext(ctx, "POST", generateURL, nil)
+	if err != nil {
+		err = fmt.Errorf("failed to forge a HTTP request using '%s' as base URL: %w", generateURL, err)
+		return
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8")
+	// Execute request
+	resp, err := customClient.Do(req)
 	if err != nil {
 		err = fmt.Errorf("failed to recover the user auth URL using '%s' as base URL: %w", generateURL, err)
 		return
 	}
+	defer resp.Body.Close()
+	// Handle response
 	if resp.StatusCode != http.StatusFound {
 		err = fmt.Errorf("unexpected return code from '%s' was expecting %d: %s", generateURL, http.StatusFound, resp.Status)
 		return

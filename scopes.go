@@ -1,7 +1,5 @@
 package netatmo
 
-import "strings"
-
 /*
 	Scopes
 	https://dev.netatmo.com/apidocumentation/oauth#scopes
@@ -29,9 +27,3 @@ const (
 	// read_homecoach: to read data coming from Smart Indoor Air Quality Monitor (gethomecoachsdata)
 	ScopeHomeCoachRead = "read_homecoach"
 )
-
-type Scopes []string
-
-func (sc Scopes) AuthURLValue() (output string) {
-	return strings.Join(sc, " ")
-}

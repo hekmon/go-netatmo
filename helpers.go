@@ -19,9 +19,10 @@ const (
 type OAuth2BaseConfig struct {
 	ClientID     string
 	ClientSecret string
-	// RedirectURL must match the one set on your application profil on the dev portal.
-	RedirectURL string // mandatory if you are using authorization code workflow, leave empty for client credentials workflow
-	Scopes      Scopes
+	Scopes       []string // see the string constants begenning with "ScopeXXX"
+	// RedirectURL must match the one set on your application profil on the dev portal
+	// mandatory if you are using authorization code workflow, leave empty for client credentials workflow
+	RedirectURL string
 }
 
 // GenerateOAuth2Config generates a complete OAuth2 config for the Netatmo API

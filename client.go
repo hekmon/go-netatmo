@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 
@@ -14,7 +15,7 @@ import (
 // AuthenticatedClient represents a Netatmo API client needed by the subpackages to query the API.
 // This package provides a reference implementation, see below.
 type AuthenticatedClient interface {
-	ExecuteNetatmoAPIRequest()
+	ExecuteNetatmoAPIRequest(method, endpoint string, body io.Reader) (err error)
 	GetTokens() oauth2.Token
 }
 
@@ -116,4 +117,30 @@ func (c *Controller) GetTokens() (tokens oauth2.Token) {
 }
 
 // ExecuteNetatmoAPIReaquest: TODO
-func (c *Controller) ExecuteNetatmoAPIRequest() {}
+func (c *Controller) ExecuteNetatmoAPIRequest(method, endpoint string, body io.Reader) (err error) {
+	// Forge
+	req, err := http.NewRequestWithContext(c.ctx, method, NetatmoAPIBaseURL+endpoint, body)
+	if err != nil {
+		err = fmt.Errorf("can not forge HTTP request: %w", err)
+		return
+	}
+	// Execute
+	resp, err := c.http.Do(req)
+	if err != nil {
+		err = fmt.Errorf("HTTP request execution failed: %w", err)
+		return
+	}
+	defer resp.Body.Close()
+	// Handle HTTP errors
+	switch resp.StatusCode {
+	case http.StatusOK:
+	case http.StatusBadRequest:
+	case http.StatusUnauthorized:
+	case http.StatusForbidden:
+	case http.StatusNotFound:
+	case http.StatusNotAcceptable:
+	case http.StatusInternalServerError:
+	default:
+	}
+	return
+}

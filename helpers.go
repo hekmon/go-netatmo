@@ -12,6 +12,7 @@ import (
 const (
 	NetatmoAPIAuthURL  = "https://api.netatmo.com/oauth2/authorize"
 	NetatmoAPITokenURL = "https://api.netatmo.com/oauth2/token"
+	NetatmoAPIBaseURL  = "https://api.netatmo.com/api/"
 )
 
 // OAuth2BaseConfig contains basic OAuth2 informations allowing to build the full conf with

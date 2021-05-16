@@ -20,7 +20,7 @@ import (
 // NewClientWithClientCredentials() or NewClientWithToken() instead.
 type Controller struct {
 	ctx   context.Context
-	conf  *oauth2.Config
+	conf  oauth2.Config
 	token *oauth2.Token
 	http  *http.Client
 }

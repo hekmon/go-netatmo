@@ -52,7 +52,7 @@ func GetUserAuthorizationURL(oac oauth2.Config, uniqID string) (userAuthURL stri
 
 // RetreiveUserRealAuthorizationURL is an helper to retreive the real auth URL you must redirect your user
 // to in order for him to allow your app and trigger your redirect URL set in your app profil.
-// customClient can be nil.
+// THe returned URL is GETabble. customClient can be nil.
 func RetreiveUserRealAuthorizationURL(ctx context.Context, oac oauth2.Config, uniqID string,
 	customClient *http.Client) (userRealAuthURL string, err error) {
 

@@ -11,8 +11,8 @@ import (
 	"golang.org/x/oauth2"
 )
 
-// AuthenticatedClient represents the Netatmo API client needed by the subpackages to query the API.
-// This package provides a reference implementation. See the Controller struct.
+// AuthenticatedClient represents a Netatmo API client needed by the subpackages to query the API.
+// This package provides a reference implementation, see below.
 type AuthenticatedClient interface {
 	ExecuteNetatmoAPIRequest()
 	GetTokens() oauth2.Token

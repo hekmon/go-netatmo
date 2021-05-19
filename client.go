@@ -8,6 +8,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strings"
 
 	cleanhttp "github.com/hashicorp/go-cleanhttp"
@@ -17,7 +18,7 @@ import (
 // AuthenticatedClient represents a Netatmo API client needed by the subpackages to query the API.
 // This package provides a reference implementation, see below.
 type AuthenticatedClient interface {
-	ExecuteNetatmoAPIRequest(ctx context.Context, method, endpoint string, body io.Reader, destination interface{}) (http.Header, error)
+	ExecuteNetatmoAPIRequest(ctx context.Context, method, endpoint string, urlValues url.Values, body io.Reader, destination interface{}) (http.Header, error)
 	GetTokens() oauth2.Token
 }
 
@@ -25,6 +26,17 @@ type AuthenticatedClient interface {
 	Below is a reference OAuth2 netatmo api client wrapper satisfying the Client interface required by the sub packages (weather, energy, etc..).
 	You can use this one, or make your own and still being able tu use the bindings off the sub packages as long as the interface is respected.
 */
+
+var (
+	netatmoAPIURL *url.URL
+)
+
+func init() {
+	var err error
+	if netatmoAPIURL, err = url.Parse(NetatmoAPIBaseURL); err != nil {
+		panic(err)
+	}
+}
 
 // Controller can act as a netatmo API Client.
 // Do not instantiate directly, use ExecuteNetatmoAPIReaquest(),
@@ -119,17 +131,22 @@ func (c *Controller) GetTokens() (tokens oauth2.Token) {
 }
 
 // ExecuteNetatmoAPIReaquest: TODO
-func (c *Controller) ExecuteNetatmoAPIRequest(ctx context.Context, method, endpoint string, body io.Reader, destination interface{}) (headers http.Header, err error) {
+func (c *Controller) ExecuteNetatmoAPIRequest(ctx context.Context, method, endpoint string,
+	urlValues url.Values, body io.Reader, destination interface{}) (headers http.Header, err error) {
 	// If no meaningfull context is provided for this request, reuse the ctx used by the client/token refresher
 	if ctx == nil || ctx == context.TODO() || ctx == context.Background() {
 		ctx = c.ctx
 	}
 	// Forge request
-	req, err := http.NewRequestWithContext(ctx, method, NetatmoAPIBaseURL+endpoint, body)
+	reqUrl := *netatmoAPIURL
+	reqUrl.Path += endpoint
+	reqUrl.RawQuery = urlValues.Encode()
+	req, err := http.NewRequestWithContext(ctx, method, reqUrl.String(), body)
 	if err != nil {
 		err = fmt.Errorf("can not forge HTTP request: %w", err)
 		return
 	}
+	req.Header.Set("accept", "application/json")
 	// Execute request
 	resp, err := c.http.Do(req)
 	if err != nil {

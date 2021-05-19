@@ -190,11 +190,10 @@ func (c *Controller) ExecuteNetatmoAPIRequest(ctx context.Context, method, endpo
 		err = structuredBody.Error
 		return
 	default:
-		uhc := UnexpectedHTTPCode{
+		err = UnexpectedHTTPCode{
 			HTTPCode: resp.StatusCode,
 			Body:     respBody,
 		}
-		err = uhc
 		return
 	}
 	// Unmarshall body to dest

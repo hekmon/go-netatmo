@@ -146,7 +146,8 @@ func (c *Controller) ExecuteNetatmoAPIRequest(ctx context.Context, method, endpo
 		err = fmt.Errorf("can not forge HTTP request: %w", err)
 		return
 	}
-	req.Header.Set("accept", "application/json")
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("User-Agent", "github.com/hekmon/go-netatmo")
 	// Execute request
 	resp, err := c.http.Do(req)
 	if err != nil {

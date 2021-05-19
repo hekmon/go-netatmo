@@ -2,9 +2,11 @@ package netatmo
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"strings"
 
@@ -15,7 +17,7 @@ import (
 // AuthenticatedClient represents a Netatmo API client needed by the subpackages to query the API.
 // This package provides a reference implementation, see below.
 type AuthenticatedClient interface {
-	ExecuteNetatmoAPIRequest(method, endpoint string, body io.Reader) (err error)
+	ExecuteNetatmoAPIRequest(ctx context.Context, method, endpoint string, body io.Reader, destination interface{}) (http.Header, error)
 	GetTokens() oauth2.Token
 }
 
@@ -117,30 +119,70 @@ func (c *Controller) GetTokens() (tokens oauth2.Token) {
 }
 
 // ExecuteNetatmoAPIReaquest: TODO
-func (c *Controller) ExecuteNetatmoAPIRequest(method, endpoint string, body io.Reader) (err error) {
-	// Forge
-	req, err := http.NewRequestWithContext(c.ctx, method, NetatmoAPIBaseURL+endpoint, body)
+func (c *Controller) ExecuteNetatmoAPIRequest(ctx context.Context, method, endpoint string, body io.Reader, destination interface{}) (headers http.Header, err error) {
+	// If no meaningfull context is provided for this request, reuse the ctx used by the client/token refresher
+	if ctx == nil || ctx == context.TODO() || ctx == context.Background() {
+		ctx = c.ctx
+	}
+	// Forge request
+	req, err := http.NewRequestWithContext(ctx, method, NetatmoAPIBaseURL+endpoint, body)
 	if err != nil {
 		err = fmt.Errorf("can not forge HTTP request: %w", err)
 		return
 	}
-	// Execute
+	// Execute request
 	resp, err := c.http.Do(req)
 	if err != nil {
 		err = fmt.Errorf("HTTP request execution failed: %w", err)
 		return
 	}
 	defer resp.Body.Close()
+	// Extract data
+	headers = resp.Header
+	var respBody []byte
+	if respBody, err = ioutil.ReadAll(resp.Body); err != nil {
+		err = fmt.Errorf("failed to read %s body: %w", resp.Status, err)
+		return
+	}
 	// Handle HTTP errors
 	switch resp.StatusCode {
 	case http.StatusOK:
-	case http.StatusBadRequest:
-	case http.StatusUnauthorized:
-	case http.StatusForbidden:
-	case http.StatusNotFound:
-	case http.StatusNotAcceptable:
-	case http.StatusInternalServerError:
+		var structuredBody struct {
+			Errors HTTPStatusOKErrors `json:"errors"`
+		}
+		if err = json.Unmarshal(respBody, &structuredBody); err != nil {
+			err = fmt.Errorf("encountered %s but fail to decode the body as the expected error: %w", resp.Status, err)
+			return
+		}
+		if len(structuredBody.Errors) > 0 {
+			err = structuredBody.Errors
+			return
+		}
+		// continue if no errors
+	case http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound,
+		http.StatusNotAcceptable, http.StatusInternalServerError:
+		structuredBody := struct {
+			Error HTTPStatusGenericError `json:"error"`
+		}{
+			Error: HTTPStatusGenericError{HTTPCode: resp.StatusCode},
+		}
+		if err = json.Unmarshal(respBody, &structuredBody); err != nil {
+			err = fmt.Errorf("encountered %s but fail to decode the body as the expected error: %w", resp.Status, err)
+			return
+		}
+		err = structuredBody.Error
+		return
 	default:
+		uhc := UnexpectedHTTPCode{
+			HTTPCode: resp.StatusCode,
+			Body:     respBody,
+		}
+		err = uhc
+		return
+	}
+	// Unmarshall body to dest
+	if err = json.Unmarshal(respBody, destination); err != nil {
+		err = fmt.Errorf("request successfull but can not parse body as JSON: %w", err)
 	}
 	return
 }

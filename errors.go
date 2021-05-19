@@ -11,13 +11,14 @@ import (
 */
 
 type HTTPStatusGenericError struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
+	HTTPCode    int    `json:"-"`
+	NetatmoCode int    `json:"code"`
+	Message     string `json:"message"`
 }
 
-func (hsge HTTPStatusGenericError) generateError(httpcode int) string {
+func (hsge HTTPStatusGenericError) Error() string {
 	tmp := fmt.Sprintf("%d %s: error code %d",
-		httpcode, http.StatusText(httpcode), hsge.Code)
+		hsge.HTTPCode, http.StatusText(hsge.HTTPCode), hsge.NetatmoCode)
 	if hsge.Message != "" {
 		tmp += ": " + hsge.Message
 	}
@@ -68,54 +69,12 @@ func (hsoe HTTPStatusOKError) Error() string {
 	return fmt.Sprintf("error code %d ('%s') for device '%s'", hsoe.Code, statusOKErrors[hsoe.Code], hsoe.DeviceID)
 }
 
-// HTTPStatusBadRequestError represents https://dev.netatmo.com/apidocumentation/general#status-bad-request
-type HTTPStatusBadRequestError HTTPStatusGenericError
-
-func (hsbre HTTPStatusBadRequestError) Error() string {
-	return (HTTPStatusGenericError)(hsbre).generateError(http.StatusBadRequest)
-}
-
-// HTTPStatusUnauthorizedError represents https://dev.netatmo.com/apidocumentation/general#status-unauthorized
-type HTTPStatusUnauthorizedError HTTPStatusGenericError
-
-func (hsue HTTPStatusUnauthorizedError) Error() string {
-	return (HTTPStatusGenericError)(hsue).generateError(http.StatusUnauthorized)
-}
-
-// HTTPStatusForbiddenError represents https://dev.netatmo.com/apidocumentation/general#status-forbidden
-type HTTPStatusForbiddenError HTTPStatusGenericError
-
-func (hsfe HTTPStatusForbiddenError) Error() string {
-	return (HTTPStatusGenericError)(hsfe).generateError(http.StatusForbidden)
-}
-
-// HTTPStatusNotFoundError represents https://dev.netatmo.com/apidocumentation/general#status-not-found
-type HTTPStatusNotFoundError HTTPStatusGenericError
-
-func (hsnfe HTTPStatusNotFoundError) Error() string {
-	return (HTTPStatusGenericError)(hsnfe).generateError(http.StatusNotFound)
-}
-
-// HTTPStatusNotAcceptableError represents https://dev.netatmo.com/apidocumentation/general#status-not-acceptable
-type HTTPStatusNotAcceptableError HTTPStatusGenericError
-
-func (hsnae HTTPStatusNotAcceptableError) Error() string {
-	return (HTTPStatusGenericError)(hsnae).generateError(http.StatusNotAcceptable)
-}
-
-// HTTPStatusInternalServerErrorError represents https://dev.netatmo.com/apidocumentation/general#internal-error
-type HTTPStatusInternalServerErrorError HTTPStatusGenericError
-
-func (hsisee HTTPStatusInternalServerErrorError) Error() string {
-	return (HTTPStatusGenericError)(hsisee).generateError(http.StatusInternalServerError)
-}
-
 // UnexpectedHTTPCode will be used for any unexpected HTTP error codes
 type UnexpectedHTTPCode struct {
-	Code int
-	Body []byte
+	HTTPCode int
+	Body     []byte
 }
 
 func (uhc UnexpectedHTTPCode) Error() string {
-	return fmt.Sprintf("%d %s (body size: %d)", uhc.Code, http.StatusText(uhc.Code), len(uhc.Body))
+	return fmt.Sprintf("%d %s (body size: %d)", uhc.HTTPCode, http.StatusText(uhc.HTTPCode), len(uhc.Body))
 }

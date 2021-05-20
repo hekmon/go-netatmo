@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/hekmon/go-netatmo"
+
 	"github.com/google/go-querystring/query"
 )
 
@@ -19,13 +21,14 @@ type GetPublicDataParameters struct {
 }
 
 // GetPublicData retrieves publicly shared weather data from Outdoor Modules within a predefined area.
-func (wc *Client) GetPublicData(ctx context.Context, params GetPublicDataParameters) (data json.RawMessage, headers http.Header, err error) {
+func (wc *Client) GetPublicData(ctx context.Context, params GetPublicDataParameters) (data json.RawMessage,
+	headers http.Header, rs netatmo.RequestStats, err error) {
 	urlValues, err := query.Values(params)
 	if err != nil {
 		err = fmt.Errorf("can not convert params as URL values: %w", err)
 		return
 	}
-	headers, err = wc.client.ExecuteNetatmoAPIRequest(ctx, "GET", "/getpublicdata", urlValues, nil, &data)
+	headers, rs, err = wc.client.ExecuteNetatmoAPIRequest(ctx, "GET", "/getpublicdata", urlValues, nil, &data)
 	return
 }
 

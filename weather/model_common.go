@@ -2,10 +2,10 @@ package weather
 
 // Place struct for Place
 type Place struct {
-	Timezone string        `json:"timezone"` // Timezone
-	Country  string        `json:"country"`  // Country
-	Altitude float32       `json:"altitude"` // Altitude
-	Location []interface{} `json:"location"`
+	Timezone string    `json:"timezone"` // Timezone
+	Country  string    `json:"country"`  // Country
+	Altitude float32   `json:"altitude"` // Altitude
+	Location []float64 `json:"location"` // Lat, Long
 }
 
 /*
@@ -75,15 +75,4 @@ type ServerResponse struct {
 	Status     *string `json:"status,omitempty"`
 	TimeExec   *string `json:"time_exec,omitempty"`
 	TimeServer *string `json:"time_server,omitempty"`
-}
-
-// StationData struct for StationData
-type StationData struct {
-	Body *StationDataBody `json:"body,omitempty"`
-}
-
-// StationDataBody struct for StationDataBody
-type StationDataBody struct {
-	Devices *[]StationDataBodyDevices `json:"devices,omitempty"`
-	User    *UserWeather              `json:"user,omitempty"`
 }

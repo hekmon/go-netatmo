@@ -2,11 +2,11 @@ package weather
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 
 	"github.com/google/go-querystring/query"
+	"github.com/hekmon/go-netatmo"
 )
 
 type GetStationDataParameters struct {
@@ -15,12 +15,19 @@ type GetStationDataParameters struct {
 }
 
 // GetStationData returns data from a user Weather Stations (measures and device specific data)
-func (wc *Client) GetStationData(ctx context.Context, params GetStationDataParameters) (data json.RawMessage, headers http.Header, err error) {
+func (wc *Client) GetStationData(ctx context.Context, params GetStationDataParameters) (data StationDataBody,
+	headers http.Header, rs netatmo.RequestStats, err error) {
 	urlValues, err := query.Values(params)
 	if err != nil {
 		err = fmt.Errorf("can not convert params as URL values: %w", err)
 		return
 	}
-	headers, err = wc.client.ExecuteNetatmoAPIRequest(ctx, "GET", "/getstationsdata", urlValues, nil, &data)
+	headers, rs, err = wc.client.ExecuteNetatmoAPIRequest(ctx, "GET", "/getstationsdata", urlValues, nil, &data)
 	return
+}
+
+// StationDataBody struct for StationDataBody
+type StationDataBody struct {
+	Devices []StationDataBodyDevices `json:"devices,omitempty"`
+	User    UserWeather              `json:"user,omitempty"`
 }

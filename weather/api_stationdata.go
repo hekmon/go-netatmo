@@ -28,6 +28,6 @@ func (wc *Client) GetStationData(ctx context.Context, params GetStationDataParam
 
 // StationDataBody struct for StationDataBody
 type StationDataBody struct {
-	Devices []StationDataBodyDevices `json:"devices,omitempty"`
-	User    UserWeather              `json:"user,omitempty"`
+	Devices []StationDataBodyDevices `json:"devices"`
+	User    UserWeather              `json:"user"`
 }

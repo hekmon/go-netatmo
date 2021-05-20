@@ -45,25 +45,25 @@ func (abs AnemometerBatteryStatus) String() string {
 
 // GoString implements the https://golang.org/pkg/fmt/#GoStringer interface
 func (abs AnemometerBatteryStatus) GoString() string {
-	return fmt.Sprintf("%s (%d)", abs.String(), abs)
+	return fmt.Sprintf("%s (%d)", abs, abs)
 }
 
-type WiFiStatus int
+type WiFiQuality int
 
 const (
-	WiFiQualityBad     WiFiStatus = 86
-	WiFiQualityAverage WiFiStatus = 71
-	WiFiQUalityGood    WiFiStatus = 56
+	WiFiQualityBad     WiFiQuality = 86
+	WiFiQualityAverage WiFiQuality = 71
+	WiFiQUalityGood    WiFiQuality = 56
 )
 
 // String implements the https://golang.org/pkg/fmt/#Stringer interface
-func (ws WiFiStatus) String() string {
+func (wq WiFiQuality) String() string {
 	switch {
-	case ws <= WiFiQUalityGood:
+	case wq <= WiFiQUalityGood:
 		return "good"
-	case ws <= WiFiQualityAverage:
+	case wq <= WiFiQualityAverage:
 		return "average"
-	case ws <= WiFiQualityBad:
+	case wq <= WiFiQualityBad:
 		return "bad"
 	default:
 		return "very bad"
@@ -71,8 +71,8 @@ func (ws WiFiStatus) String() string {
 }
 
 // GoString implements the https://golang.org/pkg/fmt/#GoStringer interface
-func (ws WiFiStatus) GoString() string {
-	return fmt.Sprintf("%s (%d)", ws.String(), ws)
+func (wq WiFiQuality) GoString() string {
+	return fmt.Sprintf("%s (%d)", wq, wq)
 }
 
 type ModulesBatteryStatus int
@@ -105,5 +105,69 @@ func (abs ModulesBatteryStatus) String() string {
 
 // GoString implements the https://golang.org/pkg/fmt/#GoStringer interface
 func (abs ModulesBatteryStatus) GoString() string {
-	return fmt.Sprintf("%s (%d)", abs.String(), abs)
+	return fmt.Sprintf("%s (%d)", abs, abs)
 }
+
+/*
+	Others modules specifications
+*/
+
+type ModuleType string
+
+const (
+	ModuleTypeStation    ModuleType = "NAMain"
+	ModuleTypeOutdoor    ModuleType = "NAModule1"
+	ModuleTypeAnemometer ModuleType = "NAModule2"
+	ModuleTypeRainGauge  ModuleType = "NAModule3"
+	ModuleTypeIndoor     ModuleType = "NAModule4"
+)
+
+type ModuleDataType string
+
+const (
+	ModuleDataTypeTemperature ModuleDataType = "Temperature"
+	ModuleDataTypeCO2         ModuleDataType = "CO2"
+	ModuleDataTypeHumidity    ModuleDataType = "Humidity"
+	ModuleDataTypeNoise       ModuleDataType = "Noise"
+	ModuleDataTypePressure    ModuleDataType = "Pressure"
+	ModuleDataTypeWind        ModuleDataType = "Wind"
+	ModuleDataTypeWRain       ModuleDataType = "Rain"
+)
+
+type RadioQuality int
+
+const (
+	RadioQualityLow     RadioQuality = 90
+	RadioQualityMedium  RadioQuality = 80 // custom
+	RadioQualityHigh    RadioQuality = 70 // custom
+	RadioQUalityHighest RadioQuality = 60
+)
+
+// String implements the https://golang.org/pkg/fmt/#Stringer interface
+func (rq RadioQuality) String() string {
+	switch {
+	case rq <= RadioQUalityHighest:
+		return "highest"
+	case rq <= RadioQualityHigh:
+		return "high"
+	case rq <= RadioQualityMedium:
+		return "medium"
+	case rq <= RadioQualityLow:
+		return "low"
+	default:
+		return "very low"
+	}
+}
+
+// GoString implements the https://golang.org/pkg/fmt/#GoStringer interface
+func (rq RadioQuality) GoString() string {
+	return fmt.Sprintf("%s (%d)", rq, rq)
+}
+
+type Trend string
+
+const (
+	TrendUp     Trend = "up"
+	TrendDown   Trend = "down"
+	TrendStable Trend = "stable"
+)

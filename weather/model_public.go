@@ -44,6 +44,7 @@ type PublicStationDataPressure struct {
 	Pressure float64
 }
 
+// PublicStationDataOutdoorValues is a collection of PublicStationDataOutdoor
 type PublicStationDataOutdoorValues []PublicStationDataOutdoor
 
 // Len returns the number of values (implements the https://pkg.go.dev/sort#Interface)

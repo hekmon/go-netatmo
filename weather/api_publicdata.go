@@ -11,6 +11,7 @@ import (
 	"github.com/google/go-querystring/query"
 )
 
+// GetPublicDataParameters represents the parameters for GetPublicData()
 type GetPublicDataParameters struct {
 	LatitudeNorthEast  float64 `url:"lat_ne"`                  // latitude of the north east corner of the requested area. -85 <= lat_ne <= 85 and lat_ne>lat_sw
 	LongitudeNorthEast float64 `url:"lon_ne"`                  // Longitude of the north east corner of the requested area. -180 <= lon_ne <= 180 and lon_ne>lon_sw

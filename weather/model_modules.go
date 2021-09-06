@@ -47,6 +47,7 @@ type DashboardDataWeatherstation struct {
 	PressureTrend    string  `json:"pressure_trend"`   // trend for the last 12h (up, down, stable)
 }
 
+// Module contains information about any additionnal modules
 type Module struct {
 	ID                   net.HardwareAddr            `json:"-"`               // uniq ID of the module (MAC address)
 	Type                 ModuleType                  `json:"type"`            // type of module (see ModuleType const values)
@@ -67,6 +68,7 @@ type Module struct {
 	DashboardDataRaw     json.RawMessage             `json:"-"`               // in case type auto detect has failed, raw dashboard will be kept here (module must still be reachable)
 }
 
+// UnmarshalJSON allows to automatically convert data to go types
 func (m *Module) UnmarshalJSON(data []byte) (err error) {
 	// Add tmp type
 	type OriginalUnmarshal Module
@@ -144,6 +146,7 @@ type OutdoorModuleDashboardData struct {
 	TempTrend   Trend     `json:"temp_trend"`  // trend for the last 12h (up, down, stable: see Trend const values)
 }
 
+// UnmarshalJSON allows to automatically convert data to go types
 func (omdd *OutdoorModuleDashboardData) UnmarshalJSON(data []byte) (err error) {
 	type OriginalUnmarshal OutdoorModuleDashboardData
 	tmp := struct {
@@ -178,6 +181,7 @@ type WindModuleDashboardData struct {
 	DateMaxWindStr time.Time `json:"-"`              // max wind date
 }
 
+// UnmarshalJSON allows to automatically convert data to go types
 func (wmdd *WindModuleDashboardData) UnmarshalJSON(data []byte) (err error) {
 	type OriginalUnmarshal WindModuleDashboardData
 	tmp := struct {
@@ -206,6 +210,7 @@ type RainModuleDashboardData struct {
 	SumRain1  float64   `json:"sum_rain_1"`  // rain measured for the last hour (mm)
 }
 
+// UnmarshalJSON allows to automatically convert data to go types
 func (rmdd *RainModuleDashboardData) UnmarshalJSON(data []byte) (err error) {
 	type OriginalUnmarshal RainModuleDashboardData
 	tmp := struct {
@@ -237,6 +242,7 @@ type IndoorModuleDashboardData struct {
 	TempTrend   Trend     `json:"temp_trend"`  // trend for the last 12h (up, down, stable: see Trend const values)
 }
 
+// UnmarshalJSON allows to automatically convert data to go types
 func (imdd *IndoorModuleDashboardData) UnmarshalJSON(data []byte) (err error) {
 	type OriginalUnmarshal IndoorModuleDashboardData
 	tmp := struct {

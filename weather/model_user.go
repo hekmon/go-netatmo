@@ -19,13 +19,17 @@ type UserWeatherAdministrative struct {
 	FeelLikeAlgo UserUnitFeelLike `json:"feel_like_algo"` // algorithm used to compute feel like temperature: humidex, heat-index
 }
 
+// UserUnitSystem represents the unit system the user is using
 type UserUnitSystem int
 
 const (
-	UserUnitSystemMetric   UserUnitSystem = 0
+	// UserUnitSystemMetric represents the international Metric system
+	UserUnitSystemMetric UserUnitSystem = 0
+	// UserUnitSystemImperial represents the Imperial metric
 	UserUnitSystemImperial UserUnitSystem = 1
 )
 
+// String implements the https://golang.org/pkg/fmt/#Stringer interface
 func (uus UserUnitSystem) String() string {
 	switch uus {
 	case UserUnitSystemMetric:
@@ -37,20 +41,28 @@ func (uus UserUnitSystem) String() string {
 	}
 }
 
+// GoString implements the https://golang.org/pkg/fmt/#GoStringer interface
 func (uus UserUnitSystem) GoString() string {
 	return fmt.Sprintf("%s (%d)", uus.String(), uus)
 }
 
+// UserUnitWind represents the unit chosen by the user to represents the wind speed
 type UserUnitWind int
 
 const (
-	UserUnitWindKph      UserUnitWind = 0
-	UserUnitWindMph      UserUnitWind = 1
-	UserUnitWindMs       UserUnitWind = 2
+	// UserUnitWindKph represents the Kilometer per Hour unit
+	UserUnitWindKph UserUnitWind = 0
+	// UserUnitWindMph represents the Miles per Hour unit
+	UserUnitWindMph UserUnitWind = 1
+	// UserUnitWindMs represents the Meter per Hour unit
+	UserUnitWindMs UserUnitWind = 2
+	// UserUnitWindBeaufort represents the Beaufort unit
 	UserUnitWindBeaufort UserUnitWind = 3
-	UserUnitWindKnot     UserUnitWind = 4
+	// UserUnitWindKnot represents the Knot unit
+	UserUnitWindKnot UserUnitWind = 4
 )
 
+// String implements the https://golang.org/pkg/fmt/#Stringer interface
 func (uuw UserUnitWind) String() string {
 	switch uuw {
 	case UserUnitWindKph:
@@ -68,6 +80,7 @@ func (uuw UserUnitWind) String() string {
 	}
 }
 
+// GoString implements the https://golang.org/pkg/fmt/#GoStringer interface
 func (uuw UserUnitWind) GoString() string {
 	return fmt.Sprintf("%s (%d)", uuw.String(), uuw)
 }
@@ -80,6 +93,7 @@ const (
 	UserUnitPressureMmHg UserUnitPressure = 2
 )
 
+// String implements the https://golang.org/pkg/fmt/#Stringer interface
 func (uup UserUnitPressure) String() string {
 	switch uup {
 	case UserUnitPressureMbar:
@@ -93,6 +107,7 @@ func (uup UserUnitPressure) String() string {
 	}
 }
 
+// GoString implements the https://golang.org/pkg/fmt/#GoStringer interface
 func (uup UserUnitPressure) GoString() string {
 	return fmt.Sprintf("%s (%d)", uup.String(), uup)
 }
@@ -104,6 +119,7 @@ const (
 	UserUnitFeelLikeHeatIndex UserUnitFeelLike = 1
 )
 
+// String implements the https://golang.org/pkg/fmt/#Stringer interface
 func (uufl UserUnitFeelLike) String() string {
 	switch uufl {
 	case UserUnitFeelLikeHumidex:
@@ -115,6 +131,7 @@ func (uufl UserUnitFeelLike) String() string {
 	}
 }
 
+// GoString implements the https://golang.org/pkg/fmt/#GoStringer interface
 func (uufl UserUnitFeelLike) GoString() string {
 	return fmt.Sprintf("%s (%d)", uufl.String(), uufl)
 }

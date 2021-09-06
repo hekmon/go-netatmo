@@ -10,6 +10,7 @@ import (
 	https://dev.netatmo.com/apidocumentation/general
 */
 
+// HTTPStatusGenericError is used to represent a non 200 HTTP error
 type HTTPStatusGenericError struct {
 	HTTPCode    int    `json:"-"`
 	NetatmoCode int    `json:"code"`
@@ -46,6 +47,7 @@ func (hsoes HTTPStatusOKErrors) Error() string {
 	return buffStr.String()
 }
 
+// HTTPStatusOKError represents a single API error while the HTTP request has returned 200
 type HTTPStatusOKError struct {
 	Code     int    `json:"code"`
 	DeviceID string `json:"id"`

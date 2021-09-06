@@ -83,7 +83,7 @@ func NewClientWithAuthorizationCode(ctx context.Context, oac oauth2.Config, auth
 	return
 }
 
-// NewClientWithAuthorizationCode returns an initialized and ready to use Netatmo API client.
+// NewClientWithClientCredentials returns an initialized and ready to use Netatmo API client.
 // https://dev.netatmo.com/apidocumentation/oauth#client-credential customClient can be nil
 func NewClientWithClientCredentials(ctx context.Context, oac oauth2.Config, username, password string,
 	customClient *http.Client) (client AuthenticatedClient, err error) {
@@ -227,6 +227,7 @@ func (c *Controller) ExecuteNetatmoAPIRequest(ctx context.Context, method, endpo
 	return
 }
 
+// RequestStatusOKPayload is the generic payload received from the netatmo API servers
 type RequestStatusOKPayload struct {
 	Body       *json.RawMessage   `json:"body"`
 	Errors     HTTPStatusOKErrors `json:"errors"`
@@ -235,6 +236,7 @@ type RequestStatusOKPayload struct {
 	TimeServer int64              `json:"time_server"` // ex: 1621453691
 }
 
+// RequestStats contains the request stats sent by the netatmo API servers after a query
 type RequestStats struct {
 	Status     string
 	TimeExec   time.Duration

@@ -9,6 +9,7 @@ import (
 	"github.com/hekmon/go-netatmo"
 )
 
+// GetStationDataParameters represents the parameters used in GetStationData()
 type GetStationDataParameters struct {
 	DeviceID     string `url:"device_id,omitempty"`     // Weather station mac address
 	GetFavorites bool   `url:"get_favorites,omitempty"` // To retrieve user's favorite weather stations

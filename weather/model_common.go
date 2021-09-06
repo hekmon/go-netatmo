@@ -35,13 +35,13 @@ type InvalidServerResponseError struct {
 	Message string  `json:"message"`
 }
 
-// Measure struct for Measure
-type Measure struct {
-	MacAddressNAMain    *MeasureMacAddressNAMain    `json:"mac_address_NAMain,omitempty"`
-	MacAddressNAModule1 *MeasureMacAddressNAModule1 `json:"mac_address_NAModule1,omitempty"`
-	MacAddressNAModule2 *MeasureMacAddressNAModule2 `json:"mac_address_NAModule2,omitempty"`
-	MacAddressNAModule3 *MeasureMacAddressNAModule3 `json:"mac_address_NAModule3,omitempty"`
-}
+// // Measure struct for Measure
+// type Measure struct {
+// 	MacAddressNAMain    *MeasureMacAddressNAMain    `json:"mac_address_NAMain,omitempty"`
+// 	MacAddressNAModule1 *MeasureMacAddressNAModule1 `json:"mac_address_NAModule1,omitempty"`
+// 	MacAddressNAModule2 *MeasureMacAddressNAModule2 `json:"mac_address_NAModule2,omitempty"`
+// 	MacAddressNAModule3 *MeasureMacAddressNAModule3 `json:"mac_address_NAModule3,omitempty"`
+// }
 
 // MeasureMacAddressNAMain struct for MeasureMacAddressNAMain
 type MeasureMacAddressNAMain struct {
@@ -67,7 +67,7 @@ type MeasureMacAddressNAModule1Res struct {
 
 // PublicData struct for PublicData
 type PublicData struct {
-	Body *[]PublicDataBody `json:"body,omitempty"`
+	Body *[]PublicStationData `json:"body,omitempty"`
 }
 
 // ServerResponse struct for ServerResponse

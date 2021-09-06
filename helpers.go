@@ -42,16 +42,16 @@ func GenerateOAuth2Config(conf OAuth2BaseConfig) (oac oauth2.Config) {
 }
 
 // GetUserAuthorizationURL returns the Netatmo OAuth2 standard URL for user authorization.
-// Unfortunatly, Netatmo requires you to access it with POST, in order for the Netatmo servers to answer back
+// Unfortunately, Netatmo requires you to access it with POST, in order for the Netatmo servers to answer back
 // the real URL with a 302. This can be annoying if you want to show/transmit your user a simple GET url:
 // in that case, you can use the RetreiveUserRealAuthorizationURL() function in order to make the POST for
-// you and retreive the real GET generated URL by the Netatmo servers. See step 1 of
+// you and retrieve the real GET generated URL by the Netatmo servers. See step 1 of
 // https://dev.netatmo.com/apidocumentation/oauth#authorization-code
 func GetUserAuthorizationURL(oac oauth2.Config, uniqID string) (userAuthURL string) {
 	return oac.AuthCodeURL(uniqID, oauth2.SetAuthURLParam("redirect_uri", oac.RedirectURL))
 }
 
-// RetreiveUserRealAuthorizationURL is an helper to retreive the real auth URL you must redirect your user
+// RetreiveUserRealAuthorizationURL is an helper to retrieve the real auth URL you must redirect your user
 // to in order for him to allow your app and trigger your redirect URL set in your app profil.
 // THe returned URL is GETabble. customClient can be nil.
 func RetreiveUserRealAuthorizationURL(ctx context.Context, oac oauth2.Config, uniqID string,

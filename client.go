@@ -108,7 +108,7 @@ func NewClientWithClientCredentials(ctx context.Context, oac oauth2.Config, user
 }
 
 // NewClientWithTokens allows to restore an already authenticated client with saved tokens.
-// To check how to retreive a client tokens, check GetTokens(). customClient can be nil
+// To check how to retrieve a client tokens, check GetTokens(). customClient can be nil
 func NewClientWithTokens(ctx context.Context, oac oauth2.Config, previousTokens *oauth2.Token,
 	customClient *http.Client) (client AuthenticatedClient, err error) {
 	// Spawn a clean client if necessary
@@ -222,7 +222,7 @@ func (c *Controller) ExecuteNetatmoAPIRequest(ctx context.Context, method, endpo
 	}
 	// Unmarshall body to dest
 	if err = json.Unmarshal(unparsedBody, destination); err != nil {
-		err = fmt.Errorf("request successfull but can not parse body as JSON: %w", err)
+		err = fmt.Errorf("request successful but can not parse body as JSON: %w", err)
 	}
 	return
 }

@@ -169,11 +169,11 @@ func (omdd *OutdoorModuleDashboardData) UnmarshalJSON(data []byte) (err error) {
 // WindModuleDashboardData struct for WindModuleDashboardData
 type WindModuleDashboardData struct {
 	Time           time.Time `json:"-"`              // date when data was measured
-	WindStrength   int64     `json:"WindStrength"`   // wind strenght (km/h)
+	WindStrength   int64     `json:"WindStrength"`   // wind strength (km/h)
 	WindAngle      int64     `json:"WindAngle"`      // wind angle
-	GustStrength   int64     `json:"GustStrength"`   // gust strengh (km/h)
+	GustStrength   int64     `json:"GustStrength"`   // gust strength (km/h)
 	GustAngle      int64     `json:"GustAngle"`      // gust angle
-	MaxWindStr     int64     `json:"max_wind_str"`   // max wind strenght (km/h)
+	MaxWindStr     int64     `json:"max_wind_str"`   // max wind strength (km/h)
 	MaxWindAngle   int64     `json:"max_wind_angle"` // max wind angle
 	DateMaxWindStr time.Time `json:"-"`              // max wind date
 }
@@ -241,8 +241,8 @@ func (imdd *IndoorModuleDashboardData) UnmarshalJSON(data []byte) (err error) {
 	type OriginalUnmarshal IndoorModuleDashboardData
 	tmp := struct {
 		TimeUTC     int64 `json:"time_utc"`      // timestamp when data was measured
-		DateMinTemp int64 `json:"date_min_temp"` // date of minimum temperature measured
-		DateMaxTemp int64 `json:"date_max_temp"` // date of maximum temperature measured
+		DateMinTemp int64 `json:"date_min_temp"` // timestamp of minimum temperature measured
+		DateMaxTemp int64 `json:"date_max_temp"` // timestamp of maximum temperature measured
 		*OriginalUnmarshal
 	}{
 		OriginalUnmarshal: (*OriginalUnmarshal)(imdd),

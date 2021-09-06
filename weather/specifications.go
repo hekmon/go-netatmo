@@ -29,7 +29,7 @@ const (
 	AnemometerBatteryMax AnemometerBatteryStatus = 6000
 	// AnemometerBatteryFull represents the full level of the anemometer battery
 	AnemometerBatteryFull AnemometerBatteryStatus = 5590
-	// AnemometerBatteryHighj represents the high level of the anemometer battery
+	// AnemometerBatteryHigh represents the high level of the anemometer battery
 	AnemometerBatteryHigh AnemometerBatteryStatus = 5180
 	// AnemometerBatteryMedium represents the medium level of the anemometer battery
 	AnemometerBatteryMedium AnemometerBatteryStatus = 4770

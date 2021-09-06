@@ -85,11 +85,15 @@ func (uuw UserUnitWind) GoString() string {
 	return fmt.Sprintf("%s (%d)", uuw.String(), uuw)
 }
 
+// UserUnitPressure represents the unit a user has choosen for display
 type UserUnitPressure int
 
 const (
+	// UserUnitPressureMbar represents the Mbar unit display user preference
 	UserUnitPressureMbar UserUnitPressure = 0
+	// UserUnitPressureInHg represents the InHg unit display user preference
 	UserUnitPressureInHg UserUnitPressure = 1
+	// UserUnitPressureMmHg represents the MmHg unit display user preference
 	UserUnitPressureMmHg UserUnitPressure = 2
 )
 

@@ -13,7 +13,7 @@ This lib is splitted into several packages in order for the user to only import 
 * [security](https://github.com/hekmon/go-netatmo/tree/main/security#readme)
 * [aircaire](https://github.com/hekmon/go-netatmo/tree/main/aircaire#readme)
 
-The first thing you should do is read the [Netatmo developers guideline](https://dev.netatmo.com/guideline) and [create an app](https://dev.netatmo.com/apps/createanapp#form) in order to retreive a `client id`, a `client secret` but also setup the application `redirect URI` if you plan to use the standard oauth2 workflow.
+The first thing you should do is read the [Netatmo developers guidelines](https://dev.netatmo.com/guideline) and [create an app](https://dev.netatmo.com/apps/createanapp#form) in order to retreive a `client id`, a `client secret` but also setup the application `redirect URI` if you plan to use the standard oauth2 workflow.
 
 ## Getting started
 

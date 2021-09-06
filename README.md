@@ -8,10 +8,10 @@ Netatmo API version: 1.1.2
 
 This lib is splitted into several packages in order for the user to only import what matters to him. The main package (this one) handles everything linked to oauth2 (authentification and token refreshing): it allows to create a client which automatically handles the authentification workflow but does not know any Netatmo product APIs. This main client is then to be used with sub package specific products API:
 
-* [weather](/hekmon/go-netatmo/tree/main/weather#readme)
-* [energy](/hekmon/go-netatmo/tree/main/energy#readme)
-* [security](/hekmon/go-netatmo/tree/main/security#readme)
-* [aircaire](/hekmon/go-netatmo/tree/main/aircaire#readme)
+* [weather](https://github.com/hekmon/go-netatmo/tree/main/weather#readme)
+* [energy](https://github.com/hekmon/go-netatmo/tree/main/energy#readme)
+* [security](https://github.com/hekmon/go-netatmo/tree/main/security#readme)
+* [aircaire](https://github.com/hekmon/go-netatmo/tree/main/aircaire#readme)
 
 The first thing you should do is read the [Netatmo developers guideline](https://dev.netatmo.com/guideline) and [create an app](https://dev.netatmo.com/apps/createanapp#form) in order to retreive a `client id`, a `client secret` but also setup the application `redirect URI` if you plan to use the standard oauth2 workflow.
 
@@ -114,7 +114,7 @@ if err != nil {
 
 You can now init products API clients using the `authedClient` that will handle API requests authentication and oauth2 tokens auto refresh.
 
-* [weather](/hekmon/go-netatmo/tree/main/weather#readme)
-* [energy](/hekmon/go-netatmo/tree/main/energy#readme)
-* [security](/hekmon/go-netatmo/tree/main/security#readme)
-* [aircaire](/hekmon/go-netatmo/tree/main/aircaire#readme)
+* [weather](https://github.com/hekmon/go-netatmo/tree/main/weather#readme)
+* [energy](https://github.com/hekmon/go-netatmo/tree/main/energy#readme)
+* [security](https://github.com/hekmon/go-netatmo/tree/main/security#readme)
+* [aircaire](https://github.com/hekmon/go-netatmo/tree/main/aircaire#readme)

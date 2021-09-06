@@ -85,7 +85,7 @@ func (uuw UserUnitWind) GoString() string {
 	return fmt.Sprintf("%s (%d)", uuw.String(), uuw)
 }
 
-// UserUnitPressure represents the unit a user has choosen for display
+// UserUnitPressure represents the unit a user has chosen for display
 type UserUnitPressure int
 
 const (
@@ -116,10 +116,13 @@ func (uup UserUnitPressure) GoString() string {
 	return fmt.Sprintf("%s (%d)", uup.String(), uup)
 }
 
+// UserUnitFeelLike represents the unit the user choose for display for feel like temperature
 type UserUnitFeelLike int
 
 const (
-	UserUnitFeelLikeHumidex   UserUnitFeelLike = 0
+	// UserUnitFeelLikeHumidex represent the Humidex feel like unit
+	UserUnitFeelLikeHumidex UserUnitFeelLike = 0
+	// UserUnitFeelLikeHeatIndex represent the Heat Index feel like unit
 	UserUnitFeelLikeHeatIndex UserUnitFeelLike = 1
 )
 

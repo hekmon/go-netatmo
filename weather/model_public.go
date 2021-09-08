@@ -14,10 +14,10 @@ type PublicStationData struct {
 	ID       string                          `json:"_id"`
 	Place    Place                           `json:"place"`
 	Mark     int                             `json:"mark"`
-	Pressure PublicStationDataPressureValues `json:"pressure"` // not in this form on the orignal payload
-	Outdoor  *PublicOutdoorModule            `json:"outdoor"`  // not in this form on the orignal payload
-	Wind     *PublicWindModule               `json:"wind"`     // not in this form on the orignal payload
-	Rain     *PublicRainModule               `json:"rain"`     // not in this form on the orignal payload
+	Pressure PublicStationDataPressureValues // not in this form on the orignal payload
+	Outdoor  *PublicOutdoorModule            // not in this form on the orignal payload
+	Wind     *PublicWindModule               // not in this form on the orignal payload
+	Rain     *PublicRainModule               // not in this form on the orignal payload
 }
 
 // UnmarshalJSON allows to create a proper payloade on the fly during JSON unmarshaling
@@ -197,8 +197,8 @@ func unmarshalPublicOutdoorData(data json.RawMessage) (outdoorData PublicStation
 
 // PublicOutdoorModule contains all the public informations for an outdoor module
 type PublicOutdoorModule struct {
-	ID       string                         `json:"id"`
-	Measures PublicStationDataOutdoorValues `json:"measures"`
+	ID       string
+	Measures PublicStationDataOutdoorValues
 }
 
 // PublicStationDataPressureValues is a collection of PublicStationDataPressure
@@ -252,12 +252,12 @@ type PublicStationDataOutdoor struct {
 
 // PublicWindModule contains all the public informations for an anemometer module
 type PublicWindModule struct {
-	ID       string       `json:"id"`
-	Measures WindMeasures `json:"measures"`
+	ID       string
+	Measures WindMeasures
 }
 
 // PublicRainModule contains all the public informations for an rain gauge module
 type PublicRainModule struct {
-	ID       string       `json:"id"`
-	Measures RainMeasures `json:"measures"`
+	ID       string
+	Measures RainMeasures
 }

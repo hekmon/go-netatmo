@@ -9,25 +9,51 @@ import (
 
 // StationDataBodyDevices struct for StationDataBodyDevices
 type StationDataBodyDevices struct {
-	ID              string                      `json:"_id"`               // uniq ID of the module (MAC address)
-	DateSetup       float32                     `json:"date_setup"`        // date when the weather station was set up
-	LastSetup       float32                     `json:"last_setup"`        // timestamp of the last installation
-	Type            ModuleType                  `json:"type"`              // type of the device (should alway be ModuleTypeStation const value)
-	LastStatusStore float32                     `json:"last_status_store"` // timestamp of the last status update
-	ModuleName      string                      `json:"module_name"`       // name of the module
-	Firmware        float32                     `json:"firmware"`          // version of the software
-	LastUpgrade     float32                     `json:"last_upgrade"`      // timestamp of the last upgrade
-	WifiStatus      float32                     `json:"wifi_status"`       // wifi status per Base station. (86=bad, 56=good)
-	Reachable       bool                        `json:"reachable"`         // true if the station connected to Netatmo cloud within the last 4 hours
-	CO2Calibrating  bool                        `json:"co2_calibrating"`   // true if the station is calibrating
-	DataType        []ModuleDataType            `json:"data_type"`         // array of data measured by the device (see ModuleDataType const values)
-	Place           Place                       `json:"place"`             // informations about where the station is
-	ReadOnly        bool                        `json:"read_only"`         // true if the user owns the station, false if he is invited to a station
-	HomeId          string                      `json:"home_id"`           // id of the home where the station is placed
-	HomeName        string                      `json:"home_name"`         // name of the home where the station is placed
-	DashboardData   DashboardDataWeatherstation `json:"dashboard_data"`    // values summary
+	ID              string                      `json:"_id"`             // uniq ID of the module (MAC address)
+	DateSetup       time.Time                   ``                       // date when the weather station was set up
+	LastSetup       time.Time                   ``                       // timestamp of the last installation
+	LastStatusStore time.Time                   ``                       // timestamp of the last status update
+	LastUpgrade     time.Time                   ``                       // timestamp of the last upgrade
+	Type            ModuleType                  `json:"type"`            // type of the device (should alway be ModuleTypeStation const value)
+	ModuleName      string                      `json:"module_name"`     // name of the module
+	Firmware        int                         `json:"firmware"`        // version of the software
+	WifiStatus      WiFiQuality                 `json:"wifi_status"`     // wifi status per Base station. (86=bad, 56=good)
+	Reachable       bool                        `json:"reachable"`       // true if the station connected to Netatmo cloud within the last 4 hours
+	CO2Calibrating  bool                        `json:"co2_calibrating"` // true if the station is calibrating
+	DataType        []ModuleDataType            `json:"data_type"`       // array of data measured by the device (see ModuleDataType const values)
+	Place           Place                       `json:"place"`           // informations about where the station is
+	ReadOnly        bool                        `json:"read_only"`       // true if the user owns the station, false if he is invited to a station
+	HomeId          string                      `json:"home_id"`         // id of the home where the station is placed
+	HomeName        string                      `json:"home_name"`       // name of the home where the station is placed
+	DashboardData   DashboardDataWeatherstation `json:"dashboard_data"`  // values summary
 	Modules         []Module                    `json:"modules"`
 	// StationName     string                      `json:"station_name"`      // name of the station - DO NOT USE ANYMORE - use home_name and module_name instead
+}
+
+// UnmarshalJSON allows to create a proper payloade on the fly during JSON unmarshaling
+func (sdbd *StationDataBodyDevices) UnmarshalJSON(data []byte) (err error) {
+	// Add tmp type
+	type OriginalUnmarshal StationDataBodyDevices
+	tmp := struct {
+		DateSetup       int64 `json:"date_setup"`        // date when the weather station was set up
+		LastSetup       int64 `json:"last_setup"`        // timestamp of the last installation
+		LastStatusStore int64 `json:"last_status_store"` // timestamp of the last status update
+		LastUpgrade     int64 `json:"last_upgrade"`      // timestamp of the last upgrade
+		*OriginalUnmarshal
+	}{
+		OriginalUnmarshal: (*OriginalUnmarshal)(sdbd),
+	}
+	// Unmarshall into the tmp fields
+	if err = json.Unmarshal(data, &tmp); err != nil {
+		err = fmt.Errorf("failed to unmarshal data to the temporary StationDataBodyDevices struct: %w", err)
+		return
+	}
+	// Convert timestamps
+	sdbd.DateSetup = time.Unix(tmp.DateSetup, 0)
+	sdbd.LastSetup = time.Unix(tmp.LastSetup, 0)
+	sdbd.LastStatusStore = time.Unix(tmp.LastStatusStore, 0)
+	sdbd.LastUpgrade = time.Unix(tmp.LastUpgrade, 0)
+	return
 }
 
 // DashboardDataWeatherstation Weather - Weather station, getstationdata

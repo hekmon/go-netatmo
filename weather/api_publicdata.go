@@ -29,6 +29,7 @@ type GetPublicDataParameters struct {
 }
 
 // GetPublicData retrieves publicly shared weather data from Outdoor Modules within a predefined area.
+// https://dev.netatmo.com/apidocumentation/weather#getpublicdata
 func (wc *Client) GetPublicData(ctx context.Context, params GetPublicDataParameters) (publicStations []PublicStationData, headers http.Header, rs netatmo.RequestStats, err error) {
 	// verify
 	if params.NorthEastLatitude < minLat || params.NorthEastLatitude > maxLat {

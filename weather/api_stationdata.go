@@ -15,7 +15,8 @@ type GetStationDataParameters struct {
 	GetFavorites bool   `url:"get_favorites,omitempty"` // To retrieve user's favorite weather stations
 }
 
-// GetStationData returns data from a user Weather Stations (measures and device specific data)
+// GetStationData returns data from a user Weather Stations (measures and device specific data).
+// https://dev.netatmo.com/apidocumentation/weather#getstationsdata
 func (wc *Client) GetStationData(ctx context.Context, params GetStationDataParameters) (data StationDataBody,
 	headers http.Header, rs netatmo.RequestStats, err error) {
 	urlValues, err := query.Values(params)

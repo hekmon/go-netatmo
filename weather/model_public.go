@@ -13,60 +13,11 @@ import (
 type PublicStationData struct {
 	ID       string                          `json:"_id"`
 	Place    Place                           `json:"place"`
-	Mark     float32                         `json:"mark"`
+	Mark     int                             `json:"mark"`
 	Pressure PublicStationDataPressureValues `json:"pressure"` // not in this form on the orignal payload
-	Outdoor  []PublicStationDataOutdoor      `json:"outdoor"`  // not in this form on the orignal payload
-	Wind     *WindMeasures                   `json:"wind"`     // not in this form on the orignal payload
-	Rain     *RainMeasures                   `json:"rain"`     // not in this form on the orignal payload
-}
-
-// PublicStationDataPressureValues is a collection of PublicStationDataPressure
-type PublicStationDataPressureValues []PublicStationDataPressure
-
-// Len returns the number of values (implements the https://pkg.go.dev/sort#Interface)
-func (psdpv PublicStationDataPressureValues) Len() int {
-	return len(psdpv)
-}
-
-// Less returns true if the timestamp of i is before j (implements the https://pkg.go.dev/sort#Interface)
-func (psdpv PublicStationDataPressureValues) Less(i, j int) bool {
-	return psdpv[i].Time.Before(psdpv[j].Time)
-}
-
-// Swap changes the values places between them within the array (implements the https://pkg.go.dev/sort#Interface)
-func (psdpv PublicStationDataPressureValues) Swap(i, j int) {
-	psdpv[i], psdpv[j] = psdpv[j], psdpv[i]
-}
-
-// PublicStationDataPressure represents a given presure at a given time
-type PublicStationDataPressure struct {
-	Time     time.Time
-	Pressure float64
-}
-
-// PublicStationDataOutdoorValues is a collection of PublicStationDataOutdoor
-type PublicStationDataOutdoorValues []PublicStationDataOutdoor
-
-// Len returns the number of values (implements the https://pkg.go.dev/sort#Interface)
-func (psdov PublicStationDataOutdoorValues) Len() int {
-	return len(psdov)
-}
-
-// Less returns true if the timestamp of i is before j (implements the https://pkg.go.dev/sort#Interface)
-func (psdov PublicStationDataOutdoorValues) Less(i, j int) bool {
-	return psdov[i].Time.Before(psdov[j].Time)
-}
-
-// Swap changes the values places between them within the array (implements the https://pkg.go.dev/sort#Interface)
-func (psdov PublicStationDataOutdoorValues) Swap(i, j int) {
-	psdov[i], psdov[j] = psdov[j], psdov[i]
-}
-
-// PublicStationDataOutdoor represents a given outdoor temperature and humidity measures at a given time
-type PublicStationDataOutdoor struct {
-	Time        time.Time
-	Temperature float64
-	Humidity    int
+	Outdoor  *PublicOutdoorModule            `json:"outdoor"`  // not in this form on the orignal payload
+	Wind     *PublicWindModule               `json:"wind"`     // not in this form on the orignal payload
+	Rain     *PublicRainModule               `json:"rain"`     // not in this form on the orignal payload
 }
 
 // UnmarshalJSON allows to create a proper payloade on the fly during JSON unmarshaling
@@ -111,19 +62,26 @@ func (pdb *PublicStationData) UnmarshalJSON(data []byte) (err error) {
 				return
 			}
 		case ModuleTypeOutdoor:
-			if pdb.Outdoor, err = unmarshalPublicOutdoorData(data); err != nil {
+			pdb.Outdoor = &PublicOutdoorModule{
+				ID: moduleID,
+			}
+			if pdb.Outdoor.Measures, err = unmarshalPublicOutdoorData(data); err != nil {
 				err = fmt.Errorf("failed to parse module ID %s payload as outdoor data: %v", moduleID, err)
 				return
 			}
 		case ModuleTypeAnemometer:
-			pdb.Wind = new(WindMeasures)
-			if err = json.Unmarshal(data, pdb.Wind); err != nil {
+			pdb.Wind = &PublicWindModule{
+				ID: moduleID,
+			}
+			if err = json.Unmarshal(data, &pdb.Wind.Measures); err != nil {
 				err = fmt.Errorf("failed to parse module ID %s payload as wind data: %w. Payload: %s", moduleID, err, string(data))
 				return
 			}
 		case ModuleTypeRainGauge:
-			pdb.Rain = new(RainMeasures)
-			if err = json.Unmarshal(data, pdb.Rain); err != nil {
+			pdb.Rain = &PublicRainModule{
+				ID: moduleID,
+			}
+			if err = json.Unmarshal(data, &pdb.Rain.Measures); err != nil {
 				err = fmt.Errorf("failed to parse module ID %s payload as rain data: %w. Payload: %s", moduleID, err, string(data))
 				return
 			}
@@ -235,4 +193,71 @@ func unmarshalPublicOutdoorData(data json.RawMessage) (outdoorData PublicStation
 	// sort values by timestamps
 	sort.Sort(outdoorData)
 	return
+}
+
+// PublicOutdoorModule contains all the public informations for an outdoor module
+type PublicOutdoorModule struct {
+	ID       string                         `json:"id"`
+	Measures PublicStationDataOutdoorValues `json:"measures"`
+}
+
+// PublicStationDataPressureValues is a collection of PublicStationDataPressure
+type PublicStationDataPressureValues []PublicStationDataPressure
+
+// Len returns the number of values (implements the https://pkg.go.dev/sort#Interface)
+func (psdpv PublicStationDataPressureValues) Len() int {
+	return len(psdpv)
+}
+
+// Less returns true if the timestamp of i is before j (implements the https://pkg.go.dev/sort#Interface)
+func (psdpv PublicStationDataPressureValues) Less(i, j int) bool {
+	return psdpv[i].Time.Before(psdpv[j].Time)
+}
+
+// Swap changes the values places between them within the array (implements the https://pkg.go.dev/sort#Interface)
+func (psdpv PublicStationDataPressureValues) Swap(i, j int) {
+	psdpv[i], psdpv[j] = psdpv[j], psdpv[i]
+}
+
+// PublicStationDataPressure represents a given presure at a given time
+type PublicStationDataPressure struct {
+	Time     time.Time
+	Pressure float64
+}
+
+// PublicStationDataOutdoorValues is a collection of PublicStationDataOutdoor
+type PublicStationDataOutdoorValues []PublicStationDataOutdoor
+
+// Len returns the number of values (implements the https://pkg.go.dev/sort#Interface)
+func (psdov PublicStationDataOutdoorValues) Len() int {
+	return len(psdov)
+}
+
+// Less returns true if the timestamp of i is before j (implements the https://pkg.go.dev/sort#Interface)
+func (psdov PublicStationDataOutdoorValues) Less(i, j int) bool {
+	return psdov[i].Time.Before(psdov[j].Time)
+}
+
+// Swap changes the values places between them within the array (implements the https://pkg.go.dev/sort#Interface)
+func (psdov PublicStationDataOutdoorValues) Swap(i, j int) {
+	psdov[i], psdov[j] = psdov[j], psdov[i]
+}
+
+// PublicStationDataOutdoor represents a given outdoor temperature and humidity measures at a given time
+type PublicStationDataOutdoor struct {
+	Time        time.Time
+	Temperature float64
+	Humidity    int
+}
+
+// PublicWindModule contains all the public informations for an anemometer module
+type PublicWindModule struct {
+	ID       string       `json:"id"`
+	Measures WindMeasures `json:"measures"`
+}
+
+// PublicRainModule contains all the public informations for an rain gauge module
+type PublicRainModule struct {
+	ID       string       `json:"id"`
+	Measures RainMeasures `json:"measures"`
 }

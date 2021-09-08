@@ -32,6 +32,8 @@ type AuthenticatedClient interface {
 
 const (
 	devMode = true
+	// NetatmoAPIBaseURL is the base URL for all API calls
+	NetatmoAPIBaseURL = "https://api.netatmo.com/api/"
 )
 
 var (

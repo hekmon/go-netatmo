@@ -14,10 +14,10 @@ type PublicStationData struct {
 	ID       string                          `json:"_id"`
 	Place    Place                           `json:"place"`
 	Mark     int                             `json:"mark"`
-	Pressure PublicStationDataPressureValues // not in this form on the orignal payload
-	Outdoor  *PublicOutdoorModule            // not in this form on the orignal payload
-	Wind     *PublicWindModule               // not in this form on the orignal payload
-	Rain     *PublicRainModule               // not in this form on the orignal payload
+	Pressure PublicStationDataPressureValues ``
+	Outdoor  *PublicOutdoorModule            ``
+	Wind     *PublicWindModule               ``
+	Rain     *PublicRainModule               ``
 }
 
 // UnmarshalJSON allows to create a proper payloade on the fly during JSON unmarshaling

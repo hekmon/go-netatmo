@@ -12,7 +12,7 @@ import (
 
 // HTTPStatusGenericError is used to represent a non 200 HTTP error
 type HTTPStatusGenericError struct {
-	HTTPCode    int    `json:"-"`
+	HTTPCode    int    ``
 	NetatmoCode int    `json:"code"`
 	Message     string `json:"message"`
 }
